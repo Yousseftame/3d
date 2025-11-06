@@ -33,7 +33,7 @@ export const getBoundingBox = (item: FurnitureItem): BoundingBox => {
 
 export const checkCollision = (box1: BoundingBox, box2: BoundingBox): boolean => {
   // Add small margin to prevent items from being too close
-  const margin = 0;
+  const margin = 0.0000000001;
 
   return (
     box1.minX - margin < box2.maxX &&
