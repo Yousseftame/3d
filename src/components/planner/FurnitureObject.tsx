@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import { ThreeEvent } from '@react-three/fiber';
+import { useRef, useState, useCallback } from 'react';
+import { useFrame, ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import { FurnitureItem } from '@/types/furniture';
 
@@ -7,6 +7,7 @@ interface FurnitureObjectProps {
   item: FurnitureItem;
   isSelected: boolean;
   roomBounds: { width: number; depth: number };
+  allItems: FurnitureItem[];
   onSelect: (id: string) => void;
   onDragStart: () => void;
   onDrag: (id: string, position: [number, number, number]) => void;
@@ -207,6 +208,7 @@ export const FurnitureObject = ({
   item,
   isSelected,
   roomBounds,
+  allItems,
   onSelect,
   onDragStart,
   onDrag,
@@ -214,6 +216,10 @@ export const FurnitureObject = ({
 }: FurnitureObjectProps) => {
   const groupRef = useRef<THREE.Group>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [targetPosition, setTargetPosition] = useState<THREE.Vector3>(
+    new THREE.Vector3(...item.position)
+  );
+  const [currentPosition] = useState(() => new THREE.Vector3(...item.position));
   const [dragPlane] = useState(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), 0));
   const [offset] = useState(() => new THREE.Vector3());
   
@@ -222,6 +228,74 @@ export const FurnitureObject = ({
     item.dimensions.height,
     item.dimensions.depth
   ];
+
+
+  // Smooth interpolation to target position
+  useFrame(() => {
+    if (!groupRef.current) return;
+    
+    currentPosition.lerp(targetPosition, 0.2);
+    groupRef.current.position.copy(currentPosition);
+  });
+
+  // Update target when item position changes
+  useState(() => {
+    targetPosition.set(...item.position);
+    currentPosition.set(...item.position);
+  });
+
+  const checkCollisionWithOthers = useCallback((testPosition: THREE.Vector3): boolean => {
+    const halfWidth = dimensions[0] / 2;
+    const halfDepth = dimensions[2] / 2;
+    const halfHeight = dimensions[1] / 2;
+
+    // Calculate rotated dimensions
+    const rotation = item.rotation % (Math.PI * 2);
+    const isRotated90 = Math.abs(rotation - Math.PI / 2) < 0.1 || Math.abs(rotation - (3 * Math.PI / 2)) < 0.1;
+    const effectiveWidth = isRotated90 ? halfDepth : halfWidth;
+    const effectiveDepth = isRotated90 ? halfWidth : halfDepth;
+
+    const margin = 0.05;
+    const testBox = {
+      minX: testPosition.x - effectiveWidth - margin,
+      maxX: testPosition.x + effectiveWidth + margin,
+      minY: testPosition.y - halfHeight - margin,
+      maxY: testPosition.y + halfHeight + margin,
+      minZ: testPosition.z - effectiveDepth - margin,
+      maxZ: testPosition.z + effectiveDepth + margin,
+    };
+
+    return allItems.some(otherItem => {
+      if (otherItem.id === item.id) return false;
+
+      const otherHalfWidth = otherItem.dimensions.width / 2;
+      const otherHalfDepth = otherItem.dimensions.depth / 2;
+      const otherHalfHeight = otherItem.dimensions.height / 2;
+
+      const otherRotation = otherItem.rotation % (Math.PI * 2);
+      const otherIsRotated90 = Math.abs(otherRotation - Math.PI / 2) < 0.1 || Math.abs(otherRotation - (3 * Math.PI / 2)) < 0.1;
+      const otherEffectiveWidth = otherIsRotated90 ? otherHalfDepth : otherHalfWidth;
+      const otherEffectiveDepth = otherIsRotated90 ? otherHalfWidth : otherHalfDepth;
+
+      const otherBox = {
+        minX: otherItem.position[0] - otherEffectiveWidth,
+        maxX: otherItem.position[0] + otherEffectiveWidth,
+        minY: otherItem.position[1] - otherHalfHeight,
+        maxY: otherItem.position[1] + otherHalfHeight,
+        minZ: otherItem.position[2] - otherEffectiveDepth,
+        maxZ: otherItem.position[2] + otherEffectiveDepth,
+      };
+
+      return (
+        testBox.minX < otherBox.maxX &&
+        testBox.maxX > otherBox.minX &&
+        testBox.minY < otherBox.maxY &&
+        testBox.maxY > otherBox.minY &&
+        testBox.minZ < otherBox.maxZ &&
+        testBox.maxZ > otherBox.minZ
+      );
+    });
+  }, [allItems, item.id, item.rotation, dimensions]);
 
   const handlePointerDown = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
@@ -247,14 +321,25 @@ export const FurnitureObject = ({
     const halfWidth = dimensions[0] / 2;
     const halfDepth = dimensions[2] / 2;
     
-    const maxX = roomBounds.width / 2 - halfWidth;
-    const maxZ = roomBounds.depth / 2 - halfDepth;
+    // Calculate rotated dimensions for bounds checking
+    const rotation = item.rotation % (Math.PI * 2);
+    const isRotated90 = Math.abs(rotation - Math.PI / 2) < 0.1 || Math.abs(rotation - (3 * Math.PI / 2)) < 0.1;
+    const effectiveWidth = isRotated90 ? dimensions[2] / 2 : halfWidth;
+    const effectiveDepth = isRotated90 ? dimensions[0] / 2 : halfDepth;
     
+    const maxX = roomBounds.width / 2 - effectiveWidth;
+    const maxZ = roomBounds.depth / 2 - effectiveDepth;
+    
+    // Apply room bounds
     intersectPoint.x = Math.max(-maxX, Math.min(maxX, intersectPoint.x));
     intersectPoint.z = Math.max(-maxZ, Math.min(maxZ, intersectPoint.z));
-    intersectPoint.y = item.position[1]; // Maintain current Y position
+    intersectPoint.y = item.position[1];
     
-    onDrag(item.id, [intersectPoint.x, intersectPoint.y, intersectPoint.z]);
+    // Check for collisions
+    if (!checkCollisionWithOthers(intersectPoint)) {
+      setTargetPosition(intersectPoint.clone());
+      onDrag(item.id, [intersectPoint.x, intersectPoint.y, intersectPoint.z]);
+    }
   };
 
   const handlePointerUp = () => {
@@ -265,7 +350,7 @@ export const FurnitureObject = ({
   };
 
   return (
-    <group ref={groupRef} position={item.position} rotation={[0, item.rotation, 0]}>
+    <group ref={groupRef} rotation={[0, item.rotation, 0]}>
       <group
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}

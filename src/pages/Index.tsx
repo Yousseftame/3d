@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Scene3D } from '@/components/planner/Scene3D';
 import { Sidebar } from '@/components/planner/Sidebar';
 import { FurnitureItem, FurnitureDefinition } from '@/types/furniture';
+import { willCollide, willCollideAfterResize, willCollideAfterRotation } from '@/utils/collision';
 import { toast } from 'sonner';
 
 const Index = () => {
@@ -63,11 +64,20 @@ const Index = () => {
   const handleUpdateDimensions = (dimension: 'width' | 'height' | 'depth', value: number) => {
     if (!selectedId) return;
     
+    const item = furniture.find(f => f.id === selectedId);
+    if (!item) return;
+
+    const newDimensions = { ...item.dimensions, [dimension]: value };
+    
+    // Check for collisions with new dimensions
+    if (willCollideAfterResize(item, newDimensions, furniture)) {
+      toast.error('Cannot resize: would overlap with another item');
+      return;
+    }
+    
     setFurniture(prev =>
       prev.map(item => {
         if (item.id === selectedId) {
-          const newDimensions = { ...item.dimensions, [dimension]: value };
-          
           // Adjust Y position if height changed and not wall-mounted
           let newPosition = item.position;
           if (dimension === 'height' && !item.isWallMounted) {
@@ -114,10 +124,21 @@ const Index = () => {
   const handleRotateSelected = () => {
     if (!selectedId) return;
     
+    const item = furniture.find(f => f.id === selectedId);
+    if (!item) return;
+
+    const newRotation = (item.rotation + Math.PI / 2) % (Math.PI * 2);
+    
+    // Check for collisions after rotation
+    if (willCollideAfterRotation(item, newRotation, furniture)) {
+      toast.error('Cannot rotate: would overlap with another item');
+      return;
+    }
+    
     setFurniture(prev =>
       prev.map(item =>
         item.id === selectedId
-          ? { ...item, rotation: (item.rotation + Math.PI / 2) % (Math.PI * 2) }
+          ? { ...item, rotation: newRotation }
           : item
       )
     );

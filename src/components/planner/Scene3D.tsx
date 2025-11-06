@@ -54,6 +54,7 @@ export const Scene3D = ({
             item={item}
             isSelected={item.id === selectedId}
             roomBounds={{ width: roomWidth, depth: roomDepth }}
+            allItems={furniture}
             onSelect={onSelectItem}
             onDragStart={onDragStart}
             onDrag={onDragItem}
