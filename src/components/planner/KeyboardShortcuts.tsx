@@ -42,6 +42,28 @@ export const KeyboardShortcuts = () => {
         <Separator />
 
         <div className="flex justify-between items-center">
+          <span className="text-muted-foreground">Rotate Item</span>
+          <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">R</kbd>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <span className="text-muted-foreground">Delete Item</span>
+          <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">Del</kbd>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <span className="text-muted-foreground">Duplicate Item</span>
+          <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">Ctrl+D</kbd>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <span className="text-muted-foreground">Deselect</span>
+          <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">Esc</kbd>
+        </div>
+
+        <Separator />
+
+        <div className="flex justify-between items-center">
           <span className="text-muted-foreground">Toggle Grid</span>
           <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">G</kbd>
         </div>
@@ -53,7 +75,7 @@ export const KeyboardShortcuts = () => {
       </div>
 
       <div className="text-xs text-muted-foreground bg-muted/30 p-2 rounded mt-2">
-        💡 Select an item first to use arrow keys
+        💡 Select an item first to rotate, delete or duplicate
       </div>
     </Card>
   );

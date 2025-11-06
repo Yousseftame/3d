@@ -6,6 +6,7 @@ import { FurnitureDefinition, FurnitureItem } from '@/types/furniture';
 import { PropertyPanel } from './PropertyPanel';
 import { GridControls } from './GridControls';
 import { KeyboardShortcuts } from './KeyboardShortcuts';
+import { RoomDimensions } from './RoomDimensions';
 
 interface SidebarProps {
   selectedItem: FurnitureItem | null;
@@ -22,6 +23,10 @@ interface SidebarProps {
   onToggleSnap: () => void;
   onToggleGrid: () => void;
   onGridSizeChange: (size: number) => void;
+  roomWidth: number;
+  roomDepth: number;
+  onRoomWidthChange: (width: number) => void;
+  onRoomDepthChange: (depth: number) => void;
 }
 
 const furnitureTypes: FurnitureDefinition[] = [
@@ -49,6 +54,10 @@ export const Sidebar = ({
   onToggleSnap,
   onToggleGrid,
   onGridSizeChange,
+  roomWidth,
+  roomDepth,
+  onRoomWidthChange,
+  onRoomDepthChange,
 }: SidebarProps) => {
   return (
     <aside className="w-80 bg-sidebar border-r border-sidebar-border p-6 overflow-y-auto">
@@ -78,6 +87,18 @@ export const Sidebar = ({
             {viewMode === '3d' ? <Grid3x3 className="w-4 h-4 mr-2" /> : <Layers className="w-4 h-4 mr-2" />}
             {viewMode === '3d' ? 'Switch to 2D View' : 'Switch to 3D View'}
           </Button>
+        </div>
+
+        <Separator />
+
+        <div>
+          <h3 className="text-sm font-semibold mb-3">Room Size</h3>
+          <RoomDimensions
+            width={roomWidth}
+            depth={roomDepth}
+            onWidthChange={onRoomWidthChange}
+            onDepthChange={onRoomDepthChange}
+          />
         </div>
 
         <Separator />

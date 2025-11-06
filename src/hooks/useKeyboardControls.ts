@@ -11,6 +11,10 @@ interface UseKeyboardControlsProps {
   snapToGrid: boolean;
   showGrid: boolean;
   onUpdatePosition: (axis: 'x' | 'y' | 'z', value: number) => void;
+  onRotate: () => void;
+  onDelete: () => void;
+  onDuplicate: () => void;
+  onDeselect: () => void;
   onToggleGrid: () => void;
   onToggleSnap: () => void;
 }
@@ -23,6 +27,10 @@ export const useKeyboardControls = ({
   snapToGrid,
   showGrid,
   onUpdatePosition,
+  onRotate,
+  onDelete,
+  onDuplicate,
+  onDeselect,
   onToggleGrid,
   onToggleSnap,
 }: UseKeyboardControlsProps) => {
@@ -30,6 +38,13 @@ export const useKeyboardControls = ({
     // Check if user is typing in an input field
     const target = e.target as HTMLElement;
     if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+      return;
+    }
+
+    // Escape to deselect
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      onDeselect();
       return;
     }
 
@@ -44,6 +59,27 @@ export const useKeyboardControls = ({
     if (e.key.toLowerCase() === 's' && !e.ctrlKey && !e.metaKey) {
       e.preventDefault();
       onToggleSnap();
+      return;
+    }
+
+    // Delete selected item with Delete or Backspace
+    if ((e.key === 'Delete' || e.key === 'Backspace') && selectedItem) {
+      e.preventDefault();
+      onDelete();
+      return;
+    }
+
+    // Rotate selected item with 'R'
+    if (e.key.toLowerCase() === 'r' && !e.ctrlKey && !e.metaKey && selectedItem) {
+      e.preventDefault();
+      onRotate();
+      return;
+    }
+
+    // Duplicate selected item with Ctrl+D or Cmd+D
+    if (e.key.toLowerCase() === 'd' && (e.ctrlKey || e.metaKey) && selectedItem) {
+      e.preventDefault();
+      onDuplicate();
       return;
     }
 
@@ -174,6 +210,10 @@ export const useKeyboardControls = ({
     roomBounds,
     gridSize,
     onUpdatePosition,
+    onRotate,
+    onDelete,
+    onDuplicate,
+    onDeselect,
     onToggleGrid,
     onToggleSnap,
   ]);

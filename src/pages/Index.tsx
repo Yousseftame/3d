@@ -14,9 +14,8 @@ const Index = () => {
   const [snapToGrid, setSnapToGrid] = useState(true);
   const [gridSize, setGridSize] = useState(0.6); // 60cm default
   const [showGrid, setShowGrid] = useState(true);
-  
-  const roomWidth = 8;
-  const roomDepth = 6;
+  const [roomWidth, setRoomWidth] = useState(8);
+  const [roomDepth, setRoomDepth] = useState(6);
 
   const selectedItem = furniture.find(item => item.id === selectedId) || null;
 
@@ -190,9 +189,74 @@ const Index = () => {
     });
   };
 
+
+  const handleDuplicateSelected = () => {
+    if (!selectedId) return;
+    
+    const item = furniture.find(f => f.id === selectedId);
+    if (!item) return;
+
+    // Create new item with slight offset to avoid overlap
+    const offset = 0.3; // 30cm offset
+    const newItem: FurnitureItem = {
+      ...item,
+      id: `${item.type}-${Date.now()}`,
+      position: [item.position[0] + offset, item.position[1], item.position[2] + offset],
+    };
+
+    // Check if new position would cause collision
+    if (!willCollide(newItem, newItem.position, furniture)) {
+      setFurniture([...furniture, newItem]);
+      setSelectedId(newItem.id);
+      toast.success('Item duplicated');
+    } else {
+      // Try different offset positions
+      const offsets = [
+        [offset * 2, 0],
+        [0, offset * 2],
+        [-offset, 0],
+        [0, -offset],
+      ];
+      
+      for (const [dx, dz] of offsets) {
+        const testPos: [number, number, number] = [
+          item.position[0] + dx,
+          item.position[1],
+          item.position[2] + dz
+        ];
+        const testItem = { ...newItem, position: testPos };
+        
+        if (!willCollide(testItem, testPos, furniture)) {
+          testItem.position = testPos;
+          setFurniture([...furniture, testItem]);
+          setSelectedId(testItem.id);
+          toast.success('Item duplicated');
+          return;
+        }
+      }
+      
+      toast.error('Cannot duplicate: no space available nearby');
+    }
+  };
+
+  const handleDeselect = () => {
+    setSelectedId(null);
+  };
+
   const handleGridSizeChange = (size: number) => {
     setGridSize(size);
     toast.success(`Grid size set to ${(size * 100).toFixed(0)}cm`);
+  };
+
+
+  const handleRoomWidthChange = (width: number) => {
+    setRoomWidth(Math.max(3, Math.min(20, width)));
+    toast.success(`Room width set to ${width.toFixed(1)}m`);
+  };
+
+  const handleRoomDepthChange = (depth: number) => {
+    setRoomDepth(Math.max(3, Math.min(20, depth)));
+    toast.success(`Room depth set to ${depth.toFixed(1)}m`);
   };
 
   // Keyboard controls - must be after all handlers are defined
@@ -204,6 +268,10 @@ const Index = () => {
     snapToGrid,
     showGrid,
     onUpdatePosition: handleUpdatePosition,
+    onRotate: handleRotateSelected,
+    onDelete: handleDeleteSelected,
+    onDuplicate: handleDuplicateSelected,
+    onDeselect: handleDeselect,
     onToggleGrid: handleToggleGrid,
     onToggleSnap: handleToggleSnap,
   });
@@ -225,6 +293,10 @@ const Index = () => {
         onToggleSnap={handleToggleSnap}
         onToggleGrid={handleToggleGrid}
         onGridSizeChange={handleGridSizeChange}
+        roomWidth={roomWidth}
+        roomDepth={roomDepth}
+        onRoomWidthChange={handleRoomWidthChange}
+        onRoomDepthChange={handleRoomDepthChange}
       />
       
       <main className="flex-1 relative">
