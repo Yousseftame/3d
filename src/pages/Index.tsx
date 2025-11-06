@@ -177,6 +177,7 @@ const Index = () => {
           selectedId={selectedId}
           roomWidth={roomWidth}
           roomDepth={roomDepth}
+          isDragging={isDragging}
           onSelectItem={handleSelectItem}
           onDragStart={handleDragStart}
           onDragItem={handleDragItem}

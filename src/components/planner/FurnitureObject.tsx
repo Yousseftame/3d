@@ -299,6 +299,7 @@ export const FurnitureObject = ({
 
   const handlePointerDown = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
+    (e as any).nativeEvent?.stopImmediatePropagation();
     onSelect(item.id);
     
     const intersectionPoint = e.point;
@@ -311,6 +312,7 @@ export const FurnitureObject = ({
   const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {
     if (!isDragging) return;
     e.stopPropagation();
+    (e as any).nativeEvent?.stopImmediatePropagation();
 
     const ray = e.ray;
     const intersectPoint = new THREE.Vector3();
@@ -355,7 +357,7 @@ export const FurnitureObject = ({
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
+        onPointerOut={handlePointerUp}
       >
         <DetailedFurniture 
           type={item.type} 

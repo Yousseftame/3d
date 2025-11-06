@@ -9,6 +9,7 @@ interface Scene3DProps {
   selectedId: string | null;
   roomWidth: number;
   roomDepth: number;
+  isDragging: boolean;
   onSelectItem: (id: string) => void;
   onDragStart: () => void;
   onDragItem: (id: string, position: [number, number, number]) => void;
@@ -21,6 +22,7 @@ export const Scene3D = ({
   selectedId,
   roomWidth,
   roomDepth,
+  isDragging,
   onSelectItem,
   onDragStart,
   onDragItem,
@@ -63,9 +65,9 @@ export const Scene3D = ({
         ))}
 
         <OrbitControls
-          enablePan={true}
-          enableZoom={true}
-          enableRotate={viewMode === '3d'}
+          enablePan={!isDragging}
+          enableZoom={!isDragging}
+          enableRotate={viewMode === '3d' && !isDragging}
           minDistance={3}
           maxDistance={15}
           maxPolarAngle={viewMode === '2d' ? 0 : Math.PI / 2.1}
