@@ -13,14 +13,30 @@ export const KeyboardShortcuts = () => {
       <Separator />
 
       <div className="space-y-2 text-xs">
-        <div className="flex justify-between items-center">
-          <span className="text-muted-foreground">Arrow Keys</span>
-          <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">Nudge by grid</kbd>
+        <div className="space-y-1 mb-2">
+          <p className="font-semibold text-foreground">Floor Items:</p>
+          <div className="flex justify-between items-center pl-2">
+            <span className="text-muted-foreground">↑↓ Forward/Back</span>
+            <span className="text-muted-foreground">←→ Left/Right</span>
+          </div>
+        </div>
+
+        <div className="space-y-1 mb-2">
+          <p className="font-semibold text-foreground">Wall Items:</p>
+          <div className="flex justify-between items-center pl-2">
+            <span className="text-muted-foreground">↑↓ Up/Down</span>
+            <span className="text-muted-foreground">←→ Left/Right</span>
+          </div>
+          <div className="flex justify-between items-center pl-2">
+            <span className="text-muted-foreground">Alt+↑↓ Forward/Back</span>
+          </div>
         </div>
         
+        <Separator />
+
         <div className="flex justify-between items-center">
           <span className="text-muted-foreground">Shift + Arrows</span>
-          <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">Nudge 1cm</kbd>
+          <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">1cm precision</kbd>
         </div>
 
         <Separator />
