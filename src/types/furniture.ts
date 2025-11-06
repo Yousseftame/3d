@@ -14,6 +14,12 @@ export interface FurnitureItem {
   rotation: number;
   color: string;
   name: string;
+  dimensions: {
+    width: number;
+    height: number;
+    depth: number;
+  };
+  isWallMounted: boolean;
 }
 
 export interface FurnitureDefinition {

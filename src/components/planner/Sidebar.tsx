@@ -1,12 +1,15 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Trash2, RotateCw, Box, Layers, Eye, Grid3x3 } from 'lucide-react';
-import { FurnitureDefinition } from '@/types/furniture';
+import { Box, Layers, Eye, Grid3x3 } from 'lucide-react';
+import { FurnitureDefinition, FurnitureItem } from '@/types/furniture';
+import { PropertyPanel } from './PropertyPanel';
 
 interface SidebarProps {
-  selectedItemId: string | null;
+  selectedItem: FurnitureItem | null;
   onAddFurniture: (type: FurnitureDefinition) => void;
+  onUpdateDimensions: (dimension: 'width' | 'height' | 'depth', value: number) => void;
+  onUpdatePosition: (axis: 'x' | 'y' | 'z', value: number) => void;
   onRotateSelected: () => void;
   onDeleteSelected: () => void;
   onToggleView: () => void;
@@ -24,8 +27,10 @@ const furnitureTypes: FurnitureDefinition[] = [
 ];
 
 export const Sidebar = ({
-  selectedItemId,
+  selectedItem,
   onAddFurniture,
+  onUpdateDimensions,
+  onUpdatePosition,
   onRotateSelected,
   onDeleteSelected,
   onToggleView,
@@ -87,32 +92,18 @@ export const Sidebar = ({
           </div>
         </div>
 
-        {selectedItemId && (
-          <>
-            <Separator />
-            <div>
-              <h3 className="text-sm font-semibold mb-3">Selected Item</h3>
-              <div className="space-y-2">
-                <Button
-                  onClick={onRotateSelected}
-                  variant="outline"
-                  className="w-full justify-start"
-                >
-                  <RotateCw className="w-4 h-4 mr-2" />
-                  Rotate 90°
-                </Button>
-                <Button
-                  onClick={onDeleteSelected}
-                  variant="destructive"
-                  className="w-full justify-start"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Delete
-                </Button>
-              </div>
-            </div>
-          </>
-        )}
+        <Separator />
+
+        <div>
+          <h3 className="text-sm font-semibold mb-3">Item Properties</h3>
+          <PropertyPanel
+            selectedItem={selectedItem}
+            onUpdateDimensions={onUpdateDimensions}
+            onUpdatePosition={onUpdatePosition}
+            onRotate={onRotateSelected}
+            onDelete={onDeleteSelected}
+          />
+        </div>
 
         <Separator />
 
