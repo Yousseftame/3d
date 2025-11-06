@@ -5,6 +5,7 @@ import { Box, Layers, Eye, Grid3x3 } from 'lucide-react';
 import { FurnitureDefinition, FurnitureItem } from '@/types/furniture';
 import { PropertyPanel } from './PropertyPanel';
 import { GridControls } from './GridControls';
+import { KeyboardShortcuts } from './KeyboardShortcuts';
 
 interface SidebarProps {
   selectedItem: FurnitureItem | null;
@@ -117,6 +118,12 @@ export const Sidebar = ({
               </Card>
             ))}
           </div>
+        </div>
+
+        <Separator />
+
+        <div>
+          <KeyboardShortcuts />
         </div>
 
         <Separator />

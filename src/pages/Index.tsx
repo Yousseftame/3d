@@ -3,6 +3,7 @@ import { Scene3D } from '@/components/planner/Scene3D';
 import { Sidebar } from '@/components/planner/Sidebar';
 import { FurnitureItem, FurnitureDefinition } from '@/types/furniture';
 import { willCollide, willCollideAfterResize, willCollideAfterRotation } from '@/utils/collision';
+import { useKeyboardControls } from '@/hooks/useKeyboardControls';
 import { toast } from 'sonner';
 
 const Index = () => {
@@ -101,6 +102,9 @@ const Index = () => {
   const handleUpdatePosition = (axis: 'x' | 'y' | 'z', value: number) => {
     if (!selectedId) return;
     
+    const item = furniture.find(f => f.id === selectedId);
+    if (!item) return;
+
     setFurniture(prev =>
       prev.map(item => {
         if (item.id === selectedId) {
@@ -110,10 +114,16 @@ const Index = () => {
           
           // Apply room bounds
           if (axis === 'x') {
-            const maxX = roomWidth / 2 - item.dimensions.width / 2;
+            const rotation = item.rotation % (Math.PI * 2);
+            const isRotated90 = Math.abs(rotation - Math.PI / 2) < 0.1 || Math.abs(rotation - (3 * Math.PI / 2)) < 0.1;
+            const effectiveWidth = isRotated90 ? item.dimensions.depth / 2 : item.dimensions.width / 2;
+            const maxX = roomWidth / 2 - effectiveWidth;
             newPosition[0] = Math.max(-maxX, Math.min(maxX, value));
           } else if (axis === 'z') {
-            const maxZ = roomDepth / 2 - item.dimensions.depth / 2;
+            const rotation = item.rotation % (Math.PI * 2);
+            const isRotated90 = Math.abs(rotation - Math.PI / 2) < 0.1 || Math.abs(rotation - (3 * Math.PI / 2)) < 0.1;
+            const effectiveDepth = isRotated90 ? item.dimensions.width / 2 : item.dimensions.depth / 2;
+            const maxZ = roomDepth / 2 - effectiveDepth;
             newPosition[2] = Math.max(-maxZ, Math.min(maxZ, value));
           }
           
@@ -163,19 +173,40 @@ const Index = () => {
 
 
   const handleToggleSnap = () => {
-    setSnapToGrid(prev => !prev);
-    toast.success(snapToGrid ? 'Snap to grid disabled' : 'Snap to grid enabled');
+    setSnapToGrid(prev => {
+      const newValue = !prev;
+      toast.success(newValue ? 'Snap to grid enabled' : 'Snap to grid disabled', {
+        description: newValue ? `Snapping to ${(gridSize * 100).toFixed(0)}cm intervals` : undefined
+      });
+      return newValue;
+    });
   };
 
   const handleToggleGrid = () => {
-    setShowGrid(prev => !prev);
-    toast.success(showGrid ? 'Grid hidden' : 'Grid visible');
+    setShowGrid(prev => {
+      const newValue = !prev;
+      toast.success(newValue ? 'Grid visible' : 'Grid hidden');
+      return newValue;
+    });
   };
 
   const handleGridSizeChange = (size: number) => {
     setGridSize(size);
     toast.success(`Grid size set to ${(size * 100).toFixed(0)}cm`);
   };
+
+  // Keyboard controls - must be after all handlers are defined
+  useKeyboardControls({
+    selectedItem,
+    furniture,
+    roomBounds: { width: roomWidth, depth: roomDepth },
+    gridSize,
+    snapToGrid,
+    showGrid,
+    onUpdatePosition: handleUpdatePosition,
+    onToggleGrid: handleToggleGrid,
+    onToggleSnap: handleToggleSnap,
+  });
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
