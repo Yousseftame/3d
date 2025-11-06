@@ -39,6 +39,17 @@ export const Room = memo(({ width, depth, height }: RoomProps) => {
         <planeGeometry args={[depth, height]} />
         <meshStandardMaterial color="#fafafa" side={THREE.DoubleSide} />
       </mesh>
+
+      {/* Front wall - transparent so camera can see inside */}
+      <mesh position={[0, height / 2, depth / 2]} rotation={[0, Math.PI, 0]} receiveShadow>
+        <planeGeometry args={[width, height]} />
+        <meshStandardMaterial 
+          color="#ffffff" 
+          side={THREE.DoubleSide}
+          transparent
+          opacity={0}
+        />
+      </mesh>
     </group>
   );
 });
