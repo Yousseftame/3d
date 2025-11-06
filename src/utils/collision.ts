@@ -1,4 +1,4 @@
-import { FurnitureItem } from '@/types/furniture';
+import { FurnitureItem } from "@/types/furniture";
 
 export interface BoundingBox {
   minX: number;
@@ -16,8 +16,8 @@ export const getBoundingBox = (item: FurnitureItem): BoundingBox => {
 
   // Calculate rotated bounding box (simplified for 90-degree rotations)
   const rotation = item.rotation % (Math.PI * 2);
-  const isRotated90 = Math.abs(rotation - Math.PI / 2) < 0.1 || Math.abs(rotation - (3 * Math.PI / 2)) < 0.1;
-  
+  const isRotated90 = Math.abs(rotation - Math.PI / 2) < 0.1 || Math.abs(rotation - (3 * Math.PI) / 2) < 0.1;
+
   const effectiveWidth = isRotated90 ? halfDepth : halfWidth;
   const effectiveDepth = isRotated90 ? halfWidth : halfDepth;
 
@@ -33,8 +33,8 @@ export const getBoundingBox = (item: FurnitureItem): BoundingBox => {
 
 export const checkCollision = (box1: BoundingBox, box2: BoundingBox): boolean => {
   // Add small margin to prevent items from being too close
-  const margin = 0.05;
-  
+  const margin = 0.000000000005;
+
   return (
     box1.minX - margin < box2.maxX &&
     box1.maxX + margin > box2.minX &&
@@ -48,12 +48,12 @@ export const checkCollision = (box1: BoundingBox, box2: BoundingBox): boolean =>
 export const willCollide = (
   item: FurnitureItem,
   newPosition: [number, number, number],
-  allItems: FurnitureItem[]
+  allItems: FurnitureItem[],
 ): boolean => {
   const testItem = { ...item, position: newPosition };
   const testBox = getBoundingBox(testItem);
 
-  return allItems.some(otherItem => {
+  return allItems.some((otherItem) => {
     if (otherItem.id === item.id) return false;
     const otherBox = getBoundingBox(otherItem);
     return checkCollision(testBox, otherBox);
@@ -63,12 +63,12 @@ export const willCollide = (
 export const willCollideAfterResize = (
   item: FurnitureItem,
   newDimensions: { width: number; height: number; depth: number },
-  allItems: FurnitureItem[]
+  allItems: FurnitureItem[],
 ): boolean => {
   const testItem = { ...item, dimensions: newDimensions };
   const testBox = getBoundingBox(testItem);
 
-  return allItems.some(otherItem => {
+  return allItems.some((otherItem) => {
     if (otherItem.id === item.id) return false;
     const otherBox = getBoundingBox(otherItem);
     return checkCollision(testBox, otherBox);
@@ -78,12 +78,12 @@ export const willCollideAfterResize = (
 export const willCollideAfterRotation = (
   item: FurnitureItem,
   newRotation: number,
-  allItems: FurnitureItem[]
+  allItems: FurnitureItem[],
 ): boolean => {
   const testItem = { ...item, rotation: newRotation };
   const testBox = getBoundingBox(testItem);
 
-  return allItems.some(otherItem => {
+  return allItems.some((otherItem) => {
     if (otherItem.id === item.id) return false;
     const otherBox = getBoundingBox(otherItem);
     return checkCollision(testBox, otherBox);
