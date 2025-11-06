@@ -5,7 +5,9 @@ export type FurnitureType =
   | 'fridge'
   | 'oven'
   | 'sink'
-  | 'dishwasher';
+  | 'dishwasher'
+  | 'door'
+  | 'window';
 
 export interface FurnitureItem {
   id: string;

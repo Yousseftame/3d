@@ -199,6 +199,68 @@ const DetailedFurniture = ({
         </group>
       );
 
+    case 'door':
+      return (
+        <group>
+          {/* Door frame */}
+          <mesh castShadow receiveShadow>
+            <boxGeometry args={[width, height, depth]} />
+            <meshStandardMaterial color={isSelected ? '#00acc1' : '#6B4423'} roughness={0.7} metalness={0.1} transparent opacity={opacity} />
+          </mesh>
+          {/* Door panel */}
+          <mesh position={[0, 0, depth / 2 + 0.01]} castShadow>
+            <boxGeometry args={[width * 0.9, height * 0.95, 0.02]} />
+            <meshStandardMaterial color={isSelected ? '#00bcd4' : '#8B5A2B'} roughness={0.5} transparent opacity={opacity} />
+          </mesh>
+          {/* Door handle */}
+          <mesh position={[width * 0.3, 0, depth / 2 + 0.04]} castShadow>
+            <sphereGeometry args={[0.04, 16, 16]} />
+            <meshStandardMaterial color="#C0C0C0" metalness={0.9} roughness={0.1} transparent opacity={opacity} />
+          </mesh>
+          {/* Panel details */}
+          <mesh position={[0, height * 0.2, depth / 2 + 0.02]} castShadow>
+            <boxGeometry args={[width * 0.7, height * 0.3, 0.01]} />
+            <meshStandardMaterial color={isSelected ? '#00acc1' : '#704214'} transparent opacity={opacity} />
+          </mesh>
+          <mesh position={[0, -height * 0.2, depth / 2 + 0.02]} castShadow>
+            <boxGeometry args={[width * 0.7, height * 0.3, 0.01]} />
+            <meshStandardMaterial color={isSelected ? '#00acc1' : '#704214'} transparent opacity={opacity} />
+          </mesh>
+        </group>
+      );
+
+    case 'window':
+      return (
+        <group>
+          {/* Window frame */}
+          <mesh castShadow receiveShadow>
+            <boxGeometry args={[width, height, depth]} />
+            <meshStandardMaterial color={isSelected ? '#00acc1' : '#E8E8E8'} roughness={0.4} metalness={0.2} transparent opacity={opacity} />
+          </mesh>
+          {/* Glass pane */}
+          <mesh position={[0, 0, 0]} castShadow receiveShadow>
+            <boxGeometry args={[width * 0.9, height * 0.9, depth * 0.5]} />
+            <meshStandardMaterial 
+              color={isSelected ? '#00bcd4' : '#87CEEB'} 
+              transparent 
+              opacity={isDragging ? 0.3 : 0.4}
+              roughness={0.1}
+              metalness={0.1}
+            />
+          </mesh>
+          {/* Window cross frame - vertical */}
+          <mesh position={[0, 0, depth / 2 + 0.01]} castShadow>
+            <boxGeometry args={[0.03, height * 0.9, 0.02]} />
+            <meshStandardMaterial color="#FFFFFF" transparent opacity={opacity} />
+          </mesh>
+          {/* Window cross frame - horizontal */}
+          <mesh position={[0, 0, depth / 2 + 0.01]} castShadow>
+            <boxGeometry args={[width * 0.9, 0.03, 0.02]} />
+            <meshStandardMaterial color="#FFFFFF" transparent opacity={opacity} />
+          </mesh>
+        </group>
+      );
+
     default:
       return (
         <mesh castShadow receiveShadow>

@@ -37,6 +37,8 @@ const furnitureTypes: FurnitureDefinition[] = [
   { type: 'fridge', name: 'Refrigerator', color: '#E8E8E8', dimensions: { width: 0.7, height: 1.8, depth: 0.7 }, isWallMounted: false, icon: '🧊' },
   { type: 'oven', name: 'Oven', color: '#2C2C2C', dimensions: { width: 0.6, height: 0.9, depth: 0.6 }, isWallMounted: false, icon: '🔥' },
   { type: 'dishwasher', name: 'Dishwasher', color: '#D3D3D3', dimensions: { width: 0.6, height: 0.9, depth: 0.6 }, isWallMounted: false, icon: '💧' },
+  { type: 'door', name: 'Door', color: '#8B5A2B', dimensions: { width: 0.9, height: 2.0, depth: 0.1 }, isWallMounted: true, icon: '🚪' },
+  { type: 'window', name: 'Window', color: '#87CEEB', dimensions: { width: 1.2, height: 1.0, depth: 0.1 }, isWallMounted: true, icon: '🪟' },
 ];
 
 export const Sidebar = ({
