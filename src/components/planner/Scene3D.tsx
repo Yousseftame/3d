@@ -35,7 +35,7 @@ export const Scene3D = ({
 
   return (
     <div className="w-full h-full bg-muted/30">
-      <Canvas shadows>
+      <Canvas shadows gl={{ preserveDrawingBuffer: true }}>
         <PerspectiveCamera makeDefault position={cameraPosition} />
         
         <ambientLight intensity={0.6} />
@@ -65,6 +65,7 @@ export const Scene3D = ({
         ))}
 
         <OrbitControls
+          makeDefault
           enablePan={!isDragging}
           enableZoom={!isDragging}
           enableRotate={viewMode === '3d' && !isDragging}

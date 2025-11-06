@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback } from 'react';
-import { useFrame, ThreeEvent } from '@react-three/fiber';
+import { ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import { FurnitureItem } from '@/types/furniture';
 
@@ -18,15 +18,18 @@ const DetailedFurniture = ({
   type, 
   dimensions, 
   color, 
-  isSelected 
+  isSelected,
+  isDragging
 }: { 
   type: string; 
   dimensions: [number, number, number]; 
   color: string;
   isSelected: boolean;
+  isDragging: boolean;
 }) => {
   const [width, height, depth] = dimensions;
   const baseColor = isSelected ? '#00acc1' : color;
+  const opacity = isDragging ? 0.7 : 1;
 
   switch (type) {
     case 'counter':
@@ -36,25 +39,25 @@ const DetailedFurniture = ({
           {/* Main body */}
           <mesh castShadow receiveShadow>
             <boxGeometry args={[width, height, depth]} />
-            <meshStandardMaterial color={baseColor} roughness={0.6} metalness={0.1} />
+            <meshStandardMaterial color={baseColor} roughness={0.6} metalness={0.1} transparent opacity={opacity} />
           </mesh>
           {/* Countertop */}
           <mesh position={[0, height / 2 + 0.02, 0]} castShadow receiveShadow>
             <boxGeometry args={[width, 0.04, depth]} />
-            <meshStandardMaterial color={isSelected ? '#00acc1' : '#4a4a4a'} roughness={0.3} metalness={0.3} />
+            <meshStandardMaterial color={isSelected ? '#00acc1' : '#4a4a4a'} roughness={0.3} metalness={0.3} transparent opacity={opacity} />
           </mesh>
           {/* Drawer lines */}
           {[...Array(3)].map((_, i) => (
             <mesh key={i} position={[0, -height / 2 + (i + 1) * (height / 4), depth / 2 + 0.01]} castShadow>
               <boxGeometry args={[width * 0.9, 0.02, 0.02]} />
-              <meshStandardMaterial color="#333" />
+              <meshStandardMaterial color="#333" transparent opacity={opacity} />
             </mesh>
           ))}
           {/* Handles */}
           {[...Array(3)].map((_, i) => (
             <mesh key={i} position={[0, -height / 2 + (i + 1) * (height / 4), depth / 2 + 0.03]} castShadow>
               <cylinderGeometry args={[0.01, 0.01, width * 0.3, 8]} />
-              <meshStandardMaterial color="#888" metalness={0.8} roughness={0.2} />
+              <meshStandardMaterial color="#888" metalness={0.8} roughness={0.2} transparent opacity={opacity} />
             </mesh>
           ))}
         </group>
@@ -66,17 +69,17 @@ const DetailedFurniture = ({
           {/* Main body */}
           <mesh castShadow receiveShadow>
             <boxGeometry args={[width, height, depth]} />
-            <meshStandardMaterial color={baseColor} roughness={0.6} metalness={0.1} />
+            <meshStandardMaterial color={baseColor} roughness={0.6} metalness={0.1} transparent opacity={opacity} />
           </mesh>
           {/* Door frame */}
           <mesh position={[0, 0, depth / 2 + 0.01]} castShadow>
             <boxGeometry args={[width * 0.9, height * 0.9, 0.02]} />
-            <meshStandardMaterial color={isSelected ? '#00bcd4' : '#5a4a3a'} />
+            <meshStandardMaterial color={isSelected ? '#00bcd4' : '#5a4a3a'} transparent opacity={opacity} />
           </mesh>
           {/* Handle */}
           <mesh position={[width * 0.3, 0, depth / 2 + 0.03]} castShadow>
             <cylinderGeometry args={[0.01, 0.01, height * 0.4, 8]} />
-            <meshStandardMaterial color="#888" metalness={0.8} roughness={0.2} />
+            <meshStandardMaterial color="#888" metalness={0.8} roughness={0.2} transparent opacity={opacity} />
           </mesh>
         </group>
       );
@@ -87,26 +90,26 @@ const DetailedFurniture = ({
           {/* Main body */}
           <mesh castShadow receiveShadow>
             <boxGeometry args={[width, height, depth]} />
-            <meshStandardMaterial color={baseColor} roughness={0.3} metalness={0.4} />
+            <meshStandardMaterial color={baseColor} roughness={0.3} metalness={0.4} transparent opacity={opacity} />
           </mesh>
           {/* Top door */}
           <mesh position={[0, height * 0.15, depth / 2 + 0.01]} castShadow>
             <boxGeometry args={[width * 0.95, height * 0.6, 0.02]} />
-            <meshStandardMaterial color={isSelected ? '#00bcd4' : '#ddd'} />
+            <meshStandardMaterial color={isSelected ? '#00bcd4' : '#ddd'} transparent opacity={opacity} />
           </mesh>
           {/* Bottom door */}
           <mesh position={[0, -height * 0.3, depth / 2 + 0.01]} castShadow>
             <boxGeometry args={[width * 0.95, height * 0.35, 0.02]} />
-            <meshStandardMaterial color={isSelected ? '#00bcd4' : '#ddd'} />
+            <meshStandardMaterial color={isSelected ? '#00bcd4' : '#ddd'} transparent opacity={opacity} />
           </mesh>
           {/* Handles */}
           <mesh position={[width * 0.35, height * 0.15, depth / 2 + 0.03]} castShadow>
             <boxGeometry args={[0.05, height * 0.2, 0.02]} />
-            <meshStandardMaterial color="#666" metalness={0.8} roughness={0.2} />
+            <meshStandardMaterial color="#666" metalness={0.8} roughness={0.2} transparent opacity={opacity} />
           </mesh>
           <mesh position={[width * 0.35, -height * 0.3, depth / 2 + 0.03]} castShadow>
             <boxGeometry args={[0.05, height * 0.15, 0.02]} />
-            <meshStandardMaterial color="#666" metalness={0.8} roughness={0.2} />
+            <meshStandardMaterial color="#666" metalness={0.8} roughness={0.2} transparent opacity={opacity} />
           </mesh>
         </group>
       );
@@ -117,22 +120,22 @@ const DetailedFurniture = ({
           {/* Counter base */}
           <mesh castShadow receiveShadow>
             <boxGeometry args={[width, height, depth]} />
-            <meshStandardMaterial color={baseColor} roughness={0.6} metalness={0.1} />
+            <meshStandardMaterial color={baseColor} roughness={0.6} metalness={0.1} transparent opacity={opacity} />
           </mesh>
           {/* Countertop */}
           <mesh position={[0, height / 2 + 0.02, 0]} castShadow receiveShadow>
             <boxGeometry args={[width, 0.04, depth]} />
-            <meshStandardMaterial color="#4a4a4a" roughness={0.3} metalness={0.3} />
+            <meshStandardMaterial color="#4a4a4a" roughness={0.3} metalness={0.3} transparent opacity={opacity} />
           </mesh>
           {/* Sink basin */}
           <mesh position={[0, height / 2 - 0.1, 0]} castShadow>
             <boxGeometry args={[width * 0.6, 0.2, depth * 0.7]} />
-            <meshStandardMaterial color="#c0c0c0" roughness={0.2} metalness={0.7} />
+            <meshStandardMaterial color="#c0c0c0" roughness={0.2} metalness={0.7} transparent opacity={opacity} />
           </mesh>
           {/* Faucet */}
           <mesh position={[0, height / 2 + 0.15, -depth * 0.2]} castShadow>
             <cylinderGeometry args={[0.02, 0.02, 0.3, 8]} />
-            <meshStandardMaterial color="#888" metalness={0.9} roughness={0.1} />
+            <meshStandardMaterial color="#888" metalness={0.9} roughness={0.1} transparent opacity={opacity} />
           </mesh>
         </group>
       );
@@ -143,7 +146,7 @@ const DetailedFurniture = ({
           {/* Main body */}
           <mesh castShadow receiveShadow>
             <boxGeometry args={[width, height, depth]} />
-            <meshStandardMaterial color={baseColor} roughness={0.4} metalness={0.2} />
+            <meshStandardMaterial color={baseColor} roughness={0.4} metalness={0.2} transparent opacity={opacity} />
           </mesh>
           {/* Glass door */}
           <mesh position={[0, height * 0.1, depth / 2 + 0.01]} castShadow>
@@ -151,19 +154,19 @@ const DetailedFurniture = ({
             <meshStandardMaterial 
               color={isSelected ? '#00bcd4' : '#1a1a1a'} 
               transparent 
-              opacity={0.6} 
+              opacity={isDragging ? 0.4 : 0.6}
               metalness={0.5}
             />
           </mesh>
           {/* Control panel */}
           <mesh position={[0, height * 0.45, depth / 2 + 0.01]} castShadow>
             <boxGeometry args={[width * 0.9, height * 0.1, 0.01]} />
-            <meshStandardMaterial color="#333" />
+            <meshStandardMaterial color="#333" transparent opacity={opacity} />
           </mesh>
           {/* Handle */}
           <mesh position={[0, height * 0.1, depth / 2 + 0.03]} castShadow>
             <cylinderGeometry args={[0.015, 0.015, width * 0.7, 8]} />
-            <meshStandardMaterial color="#888" metalness={0.8} roughness={0.2} />
+            <meshStandardMaterial color="#888" metalness={0.8} roughness={0.2} transparent opacity={opacity} />
           </mesh>
         </group>
       );
@@ -174,22 +177,22 @@ const DetailedFurniture = ({
           {/* Main body */}
           <mesh castShadow receiveShadow>
             <boxGeometry args={[width, height, depth]} />
-            <meshStandardMaterial color={baseColor} roughness={0.3} metalness={0.4} />
+            <meshStandardMaterial color={baseColor} roughness={0.3} metalness={0.4} transparent opacity={opacity} />
           </mesh>
           {/* Door */}
           <mesh position={[0, 0, depth / 2 + 0.01]} castShadow>
             <boxGeometry args={[width * 0.95, height * 0.95, 0.02]} />
-            <meshStandardMaterial color={isSelected ? '#00bcd4' : '#ddd'} />
+            <meshStandardMaterial color={isSelected ? '#00bcd4' : '#ddd'} transparent opacity={opacity} />
           </mesh>
           {/* Control panel */}
           <mesh position={[0, height * 0.4, depth / 2 + 0.02]} castShadow>
             <boxGeometry args={[width * 0.8, height * 0.1, 0.01]} />
-            <meshStandardMaterial color="#333" />
+            <meshStandardMaterial color="#333" transparent opacity={opacity} />
           </mesh>
           {/* Handle */}
           <mesh position={[0, height * 0.3, depth / 2 + 0.03]} castShadow>
             <cylinderGeometry args={[0.01, 0.01, width * 0.6, 8]} />
-            <meshStandardMaterial color="#888" metalness={0.8} roughness={0.2} />
+            <meshStandardMaterial color="#888" metalness={0.8} roughness={0.2} transparent opacity={opacity} />
           </mesh>
         </group>
       );
@@ -198,7 +201,7 @@ const DetailedFurniture = ({
       return (
         <mesh castShadow receiveShadow>
           <boxGeometry args={dimensions} />
-          <meshStandardMaterial color={baseColor} />
+          <meshStandardMaterial color={baseColor} transparent opacity={opacity} />
         </mesh>
       );
   }
@@ -216,10 +219,6 @@ export const FurnitureObject = ({
 }: FurnitureObjectProps) => {
   const groupRef = useRef<THREE.Group>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [targetPosition, setTargetPosition] = useState<THREE.Vector3>(
-    new THREE.Vector3(...item.position)
-  );
-  const [currentPosition] = useState(() => new THREE.Vector3(...item.position));
   const [dragPlane] = useState(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), 0));
   const [offset] = useState(() => new THREE.Vector3());
   
@@ -228,21 +227,6 @@ export const FurnitureObject = ({
     item.dimensions.height,
     item.dimensions.depth
   ];
-
-
-  // Smooth interpolation to target position
-  useFrame(() => {
-    if (!groupRef.current) return;
-    
-    currentPosition.lerp(targetPosition, 0.2);
-    groupRef.current.position.copy(currentPosition);
-  });
-
-  // Update target when item position changes
-  useState(() => {
-    targetPosition.set(...item.position);
-    currentPosition.set(...item.position);
-  });
 
   const checkCollisionWithOthers = useCallback((testPosition: THREE.Vector3): boolean => {
     const halfWidth = dimensions[0] / 2;
@@ -320,14 +304,11 @@ export const FurnitureObject = ({
     
     intersectPoint.sub(offset);
     
-    const halfWidth = dimensions[0] / 2;
-    const halfDepth = dimensions[2] / 2;
-    
     // Calculate rotated dimensions for bounds checking
     const rotation = item.rotation % (Math.PI * 2);
     const isRotated90 = Math.abs(rotation - Math.PI / 2) < 0.1 || Math.abs(rotation - (3 * Math.PI / 2)) < 0.1;
-    const effectiveWidth = isRotated90 ? dimensions[2] / 2 : halfWidth;
-    const effectiveDepth = isRotated90 ? dimensions[0] / 2 : halfDepth;
+    const effectiveWidth = isRotated90 ? dimensions[2] / 2 : dimensions[0] / 2;
+    const effectiveDepth = isRotated90 ? dimensions[0] / 2 : dimensions[2] / 2;
     
     const maxX = roomBounds.width / 2 - effectiveWidth;
     const maxZ = roomBounds.depth / 2 - effectiveDepth;
@@ -337,9 +318,8 @@ export const FurnitureObject = ({
     intersectPoint.z = Math.max(-maxZ, Math.min(maxZ, intersectPoint.z));
     intersectPoint.y = item.position[1];
     
-    // Check for collisions
+    // Check for collisions - only update if no collision
     if (!checkCollisionWithOthers(intersectPoint)) {
-      setTargetPosition(intersectPoint.clone());
       onDrag(item.id, [intersectPoint.x, intersectPoint.y, intersectPoint.z]);
     }
   };
@@ -352,7 +332,7 @@ export const FurnitureObject = ({
   };
 
   return (
-    <group ref={groupRef} rotation={[0, item.rotation, 0]}>
+    <group ref={groupRef} position={item.position} rotation={[0, item.rotation, 0]}>
       <group
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -364,6 +344,7 @@ export const FurnitureObject = ({
           dimensions={dimensions} 
           color={item.color}
           isSelected={isSelected}
+          isDragging={isDragging}
         />
       </group>
       
