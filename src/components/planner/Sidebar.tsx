@@ -4,6 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { Box, Layers, Eye, Grid3x3 } from 'lucide-react';
 import { FurnitureDefinition, FurnitureItem } from '@/types/furniture';
 import { PropertyPanel } from './PropertyPanel';
+import { GridControls } from './GridControls';
 
 interface SidebarProps {
   selectedItem: FurnitureItem | null;
@@ -14,6 +15,12 @@ interface SidebarProps {
   onDeleteSelected: () => void;
   onToggleView: () => void;
   viewMode: '3d' | '2d';
+  snapToGrid: boolean;
+  gridSize: number;
+  showGrid: boolean;
+  onToggleSnap: () => void;
+  onToggleGrid: () => void;
+  onGridSizeChange: (size: number) => void;
 }
 
 const furnitureTypes: FurnitureDefinition[] = [
@@ -35,6 +42,12 @@ export const Sidebar = ({
   onDeleteSelected,
   onToggleView,
   viewMode,
+  snapToGrid,
+  gridSize,
+  showGrid,
+  onToggleSnap,
+  onToggleGrid,
+  onGridSizeChange,
 }: SidebarProps) => {
   return (
     <aside className="w-80 bg-sidebar border-r border-sidebar-border p-6 overflow-y-auto">
@@ -64,6 +77,20 @@ export const Sidebar = ({
             {viewMode === '3d' ? <Grid3x3 className="w-4 h-4 mr-2" /> : <Layers className="w-4 h-4 mr-2" />}
             {viewMode === '3d' ? 'Switch to 2D View' : 'Switch to 3D View'}
           </Button>
+        </div>
+
+        <Separator />
+
+        <div>
+          <h3 className="text-sm font-semibold mb-3">Grid & Alignment</h3>
+          <GridControls
+            snapToGrid={snapToGrid}
+            gridSize={gridSize}
+            showGrid={showGrid}
+            onToggleSnap={onToggleSnap}
+            onToggleGrid={onToggleGrid}
+            onGridSizeChange={onGridSizeChange}
+          />
         </div>
 
         <Separator />

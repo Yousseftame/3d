@@ -2,6 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { Room } from './Room';
 import { FurnitureObject } from './FurnitureObject';
+import { GridOverlay } from './GridOverlay';
 import { FurnitureItem } from '@/types/furniture';
 
 interface Scene3DProps {
@@ -10,6 +11,9 @@ interface Scene3DProps {
   roomWidth: number;
   roomDepth: number;
   isDragging: boolean;
+  snapToGrid: boolean;
+  gridSize: number;
+  showGrid: boolean;
   onSelectItem: (id: string) => void;
   onDragStart: () => void;
   onDragItem: (id: string, position: [number, number, number]) => void;
@@ -23,6 +27,9 @@ export const Scene3D = ({
   roomWidth,
   roomDepth,
   isDragging,
+  snapToGrid,
+  gridSize,
+  showGrid,
   onSelectItem,
   onDragStart,
   onDragItem,
@@ -49,6 +56,7 @@ export const Scene3D = ({
         <pointLight position={[-10, 10, -10]} intensity={0.5} />
 
         <Room width={roomWidth} depth={roomDepth} height={3} />
+        <GridOverlay width={roomWidth} depth={roomDepth} gridSize={gridSize} visible={showGrid} />
 
         {furniture.map((item) => (
           <FurnitureObject
@@ -57,6 +65,8 @@ export const Scene3D = ({
             isSelected={item.id === selectedId}
             roomBounds={{ width: roomWidth, depth: roomDepth }}
             allItems={furniture}
+            snapToGrid={snapToGrid}
+            gridSize={gridSize}
             onSelect={onSelectItem}
             onDragStart={onDragStart}
             onDrag={onDragItem}

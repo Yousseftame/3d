@@ -10,6 +10,9 @@ const Index = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [viewMode, setViewMode] = useState<'3d' | '2d'>('3d');
+  const [snapToGrid, setSnapToGrid] = useState(true);
+  const [gridSize, setGridSize] = useState(0.6); // 60cm default
+  const [showGrid, setShowGrid] = useState(true);
   
   const roomWidth = 8;
   const roomDepth = 6;
@@ -158,6 +161,22 @@ const Index = () => {
     toast.success(`Switched to ${viewMode === '3d' ? '2D' : '3D'} view`);
   };
 
+
+  const handleToggleSnap = () => {
+    setSnapToGrid(prev => !prev);
+    toast.success(snapToGrid ? 'Snap to grid disabled' : 'Snap to grid enabled');
+  };
+
+  const handleToggleGrid = () => {
+    setShowGrid(prev => !prev);
+    toast.success(showGrid ? 'Grid hidden' : 'Grid visible');
+  };
+
+  const handleGridSizeChange = (size: number) => {
+    setGridSize(size);
+    toast.success(`Grid size set to ${(size * 100).toFixed(0)}cm`);
+  };
+
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <Sidebar
@@ -169,6 +188,12 @@ const Index = () => {
         onDeleteSelected={handleDeleteSelected}
         onToggleView={handleToggleView}
         viewMode={viewMode}
+        snapToGrid={snapToGrid}
+        gridSize={gridSize}
+        showGrid={showGrid}
+        onToggleSnap={handleToggleSnap}
+        onToggleGrid={handleToggleGrid}
+        onGridSizeChange={handleGridSizeChange}
       />
       
       <main className="flex-1 relative">
@@ -178,6 +203,9 @@ const Index = () => {
           roomWidth={roomWidth}
           roomDepth={roomDepth}
           isDragging={isDragging}
+          snapToGrid={snapToGrid}
+          gridSize={gridSize}
+          showGrid={showGrid}
           onSelectItem={handleSelectItem}
           onDragStart={handleDragStart}
           onDragItem={handleDragItem}

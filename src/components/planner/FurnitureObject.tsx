@@ -8,6 +8,8 @@ interface FurnitureObjectProps {
   isSelected: boolean;
   roomBounds: { width: number; depth: number };
   allItems: FurnitureItem[];
+  snapToGrid: boolean;
+  gridSize: number;
   onSelect: (id: string) => void;
   onDragStart: () => void;
   onDrag: (id: string, position: [number, number, number]) => void;
@@ -212,6 +214,8 @@ export const FurnitureObject = ({
   isSelected,
   roomBounds,
   allItems,
+  snapToGrid,
+  gridSize,
   onSelect,
   onDragStart,
   onDrag,
@@ -303,6 +307,12 @@ export const FurnitureObject = ({
     ray.intersectPlane(dragPlane, intersectPoint);
     
     intersectPoint.sub(offset);
+    
+    // Apply snap to grid if enabled
+    if (snapToGrid) {
+      intersectPoint.x = Math.round(intersectPoint.x / gridSize) * gridSize;
+      intersectPoint.z = Math.round(intersectPoint.z / gridSize) * gridSize;
+    }
     
     // Calculate rotated dimensions for bounds checking
     const rotation = item.rotation % (Math.PI * 2);
