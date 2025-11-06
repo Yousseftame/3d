@@ -60,6 +60,14 @@ const Index = () => {
     );
   };
 
+  const handleRotateItem = (id: string, rotation: number) => {
+    setFurniture(prev =>
+      prev.map(item =>
+        item.id === id ? { ...item, rotation } : item
+      )
+    );
+  };
+
   const handleDragEnd = () => {
     setIsDragging(false);
   };
@@ -306,13 +314,11 @@ const Index = () => {
           roomWidth={roomWidth}
           roomDepth={roomDepth}
           isDragging={isDragging}
-          snapToGrid={snapToGrid}
-          gridSize={gridSize}
           showGrid={showGrid}
+          gridSize={gridSize}
           onSelectItem={handleSelectItem}
-          onDragStart={handleDragStart}
           onDragItem={handleDragItem}
-          onDragEnd={handleDragEnd}
+          onRotateItem={handleRotateItem}
           viewMode={viewMode}
         />
       </main>

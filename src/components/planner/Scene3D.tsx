@@ -11,13 +11,11 @@ interface Scene3DProps {
   roomWidth: number;
   roomDepth: number;
   isDragging: boolean;
-  snapToGrid: boolean;
-  gridSize: number;
   showGrid: boolean;
+  gridSize: number;
   onSelectItem: (id: string) => void;
-  onDragStart: () => void;
   onDragItem: (id: string, position: [number, number, number]) => void;
-  onDragEnd: () => void;
+  onRotateItem: (id: string, rotation: number) => void;
   viewMode: '3d' | '2d';
 }
 
@@ -27,13 +25,11 @@ export const Scene3D = ({
   roomWidth,
   roomDepth,
   isDragging,
-  snapToGrid,
-  gridSize,
   showGrid,
+  gridSize,
   onSelectItem,
-  onDragStart,
   onDragItem,
-  onDragEnd,
+  onRotateItem,
   viewMode,
 }: Scene3DProps) => {
   const cameraPosition = viewMode === '2d' 
@@ -65,12 +61,9 @@ export const Scene3D = ({
             isSelected={item.id === selectedId}
             roomBounds={{ width: roomWidth, depth: roomDepth }}
             allItems={furniture}
-            snapToGrid={snapToGrid}
-            gridSize={gridSize}
             onSelect={onSelectItem}
-            onDragStart={onDragStart}
             onDrag={onDragItem}
-            onDragEnd={onDragEnd}
+            onRotate={onRotateItem}
           />
         ))}
 
