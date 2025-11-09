@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 
 
 // src/utils/collision.ts
 import { FurnitureItem } from '@/types/furniture';
-=======
-import { FurnitureItem } from "@/types/furniture";
->>>>>>> 0fbc52bcac78d7538635628f6d8a170e9e81ba67
 
 export interface BoundingBox {
   minX: number;
@@ -28,13 +24,9 @@ export const getBoundingBox = (item: FurnitureItem): BoundingBox => {
   const halfDepth = item.dimensions.depth / 2;
 
   const rotation = item.rotation % (Math.PI * 2);
-<<<<<<< HEAD
   const isRotated90 =
     Math.abs(rotation - Math.PI / 2) < 0.1 ||
     Math.abs(rotation - (3 * Math.PI) / 2) < 0.1;
-=======
-  const isRotated90 = Math.abs(rotation - Math.PI / 2) < 0.1 || Math.abs(rotation - (3 * Math.PI) / 2) < 0.1;
->>>>>>> 0fbc52bcac78d7538635628f6d8a170e9e81ba67
 
   const effectiveWidth = isRotated90 ? halfDepth : halfWidth;
   const effectiveDepth = isRotated90 ? halfWidth : halfDepth;
@@ -77,13 +69,7 @@ export const getRoomBounds = (
 
 // ----------------- collision helpers -----------------
 export const checkCollision = (box1: BoundingBox, box2: BoundingBox): boolean => {
-<<<<<<< HEAD
   const margin = 0.01;
-=======
-  // Add small margin to prevent items from being too close
-  const margin = 0;
-
->>>>>>> 0fbc52bcac78d7538635628f6d8a170e9e81ba67
   return (
     box1.minX - margin < box2.maxX &&
     box1.maxX + margin > box2.minX &&
