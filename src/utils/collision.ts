@@ -1,3 +1,6 @@
+
+
+// src/utils/collision.ts
 import { FurnitureItem } from '@/types/furniture';
 
 export interface BoundingBox {
@@ -9,15 +12,22 @@ export interface BoundingBox {
   maxZ: number;
 }
 
+export interface Wall {
+  start: [number, number]; // [x, z]
+  end: [number, number];   // [x, z]
+}
+
+// ----------------- bounding box for a furniture item (needed by collision funcs) -----------------
 export const getBoundingBox = (item: FurnitureItem): BoundingBox => {
   const halfWidth = item.dimensions.width / 2;
   const halfHeight = item.dimensions.height / 2;
   const halfDepth = item.dimensions.depth / 2;
 
-  // Calculate rotated bounding box (simplified for 90-degree rotations)
   const rotation = item.rotation % (Math.PI * 2);
-  const isRotated90 = Math.abs(rotation - Math.PI / 2) < 0.1 || Math.abs(rotation - (3 * Math.PI / 2)) < 0.1;
-  
+  const isRotated90 =
+    Math.abs(rotation - Math.PI / 2) < 0.1 ||
+    Math.abs(rotation - (3 * Math.PI) / 2) < 0.1;
+
   const effectiveWidth = isRotated90 ? halfDepth : halfWidth;
   const effectiveDepth = isRotated90 ? halfWidth : halfDepth;
 
@@ -31,10 +41,35 @@ export const getBoundingBox = (item: FurnitureItem): BoundingBox => {
   };
 };
 
+// ----------------- room bounds computed from walls (separate function) -----------------
+export const getRoomBounds = (
+  walls: Wall[] | undefined,
+  fallback: { width: number; depth: number }
+): { minX: number; maxX: number; minZ: number; maxZ: number } => {
+  if (!walls || walls.length === 0) {
+    const { width, depth } = fallback;
+    return {
+      minX: -width / 2,
+      maxX: width / 2,
+      minZ: -depth / 2,
+      maxZ: depth / 2,
+    };
+  }
+
+  const xs = walls.flatMap((w) => [w.start[0], w.end[0]]);
+  const zs = walls.flatMap((w) => [w.start[1], w.end[1]]);
+
+  return {
+    minX: Math.min(...xs),
+    maxX: Math.max(...xs),
+    minZ: Math.min(...zs),
+    maxZ: Math.max(...zs),
+  };
+};
+
+// ----------------- collision helpers -----------------
 export const checkCollision = (box1: BoundingBox, box2: BoundingBox): boolean => {
-  // Add small margin to prevent items from being too close
-  const margin = 0.05;
-  
+  const margin = 0.01;
   return (
     box1.minX - margin < box2.maxX &&
     box1.maxX + margin > box2.minX &&
@@ -53,7 +88,7 @@ export const willCollide = (
   const testItem = { ...item, position: newPosition };
   const testBox = getBoundingBox(testItem);
 
-  return allItems.some(otherItem => {
+  return allItems.some((otherItem) => {
     if (otherItem.id === item.id) return false;
     const otherBox = getBoundingBox(otherItem);
     return checkCollision(testBox, otherBox);
@@ -68,7 +103,7 @@ export const willCollideAfterResize = (
   const testItem = { ...item, dimensions: newDimensions };
   const testBox = getBoundingBox(testItem);
 
-  return allItems.some(otherItem => {
+  return allItems.some((otherItem) => {
     if (otherItem.id === item.id) return false;
     const otherBox = getBoundingBox(otherItem);
     return checkCollision(testBox, otherBox);
@@ -83,7 +118,7 @@ export const willCollideAfterRotation = (
   const testItem = { ...item, rotation: newRotation };
   const testBox = getBoundingBox(testItem);
 
-  return allItems.some(otherItem => {
+  return allItems.some((otherItem) => {
     if (otherItem.id === item.id) return false;
     const otherBox = getBoundingBox(otherItem);
     return checkCollision(testBox, otherBox);

@@ -4,6 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Separator } from '@/components/ui/separator';
 import { Maximize2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
+import Kitchen2DEditor from './Kitchen2DEditor';
+import { Room } from './Room';
 
 interface RoomDimensionsProps {
   width: number;
@@ -74,6 +77,24 @@ export const RoomDimensions = ({
           />
         </div>
       </div>
+
+
+      {/* --------------------------------------------------------------- */}
+      <Tabs defaultValue="3d" className=''>
+        <TabsList className='flex items-center justify-between'>
+          <TabsTrigger className='border-2 rounded-sm px-4 py-1' value="2d">2D Editor</TabsTrigger>
+          <TabsTrigger className='border-2 rounded-sm px-4 py-1' value="3d">3D View</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="2d">
+          <Kitchen2DEditor />
+        </TabsContent>
+
+        <TabsContent value="3d">
+          <Room width={width} depth={depth} height={3} />
+        </TabsContent>
+      </Tabs>
+      {/* --------------------------------------------------------------- */}
 
       <Separator />
 

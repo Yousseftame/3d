@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
+import { Grid, OrbitControls, PerspectiveCamera, Sky } from '@react-three/drei';
 import { Room } from './Room';
 import { FurnitureObject } from './FurnitureObject';
 import { GridOverlay } from './GridOverlay';
@@ -39,10 +39,40 @@ export const Scene3D = ({
   return (
     <div className="w-full h-full bg-muted/30">
       <Canvas shadows gl={{ preserveDrawingBuffer: true }}>
+
+
+        {/* Sky  */}
+        <Sky
+            distance={450000} 
+            sunPosition={[100, 20, 100]} // Sun
+            inclination={0.49} // Light angle
+            azimuth={0.25} // light diriction  
+          />
+        {/* Sky  */}
+
+  
+        {/* Grid  */}
+        <Grid
+          position={[0, 0.01, 0]} 
+          args={[5, 5]} 
+          cellSize={1} 
+          cellThickness={0.8}
+          cellColor="#6f6f6f"
+          sectionSize={10}
+          sectionThickness={.5}
+          sectionColor="#444"
+          fadeDistance={40}
+          fadeStrength={1}
+          infiniteGrid 
+        />
+        {/* Grid  */}
+
+        
+
         <PerspectiveCamera makeDefault position={cameraPosition} />
         
         <ambientLight intensity={0.6} />
-        <directionalLight
+        <directionalLight 
           position={[10, 10, 5]}
           intensity={1}
           castShadow

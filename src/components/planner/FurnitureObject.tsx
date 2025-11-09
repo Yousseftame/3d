@@ -370,3 +370,157 @@ export const FurnitureObject = ({
     </group>
   );
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { useRef, useEffect, Suspense } from 'react';
+// import { useThree } from '@react-three/fiber';
+// import { TransformControls, useGLTF } from '@react-three/drei';
+// import * as THREE from 'three';
+// import { FurnitureItem } from '@/types/furniture';
+
+// interface FurnitureObjectProps {
+//   item: FurnitureItem;
+//   isSelected: boolean;
+//   roomBounds: { width: number; depth: number };
+//   allItems: FurnitureItem[];
+//   onSelect: (id: string) => void;
+//   onDrag: (id: string, position: [number, number, number]) => void;
+//   onRotate: (id: string, rotation: number) => void;
+// }
+
+// // موديلات جاهزة لكل نوع أثاث
+// const furnitureModels: Record<string, string> = {
+//   fridge: '/models/fridge.glb',
+//   oven: '/models/oven.glb',
+//   sink: '/models/sink.glb',
+//   'cabinet-floor': '/models/cabinet-floor.glb',
+//   'cabinet-wall': '/models/cabinet-wall.glb',
+//   dishwasher: '/models/dishwasher.glb',
+//   counter: '/models/counter.glb',
+//   door: '/models/door.glb',
+//   window: '/models/window.glb',
+// };
+
+// const FurnitureModel = ({ type, isSelected }: { type: string; isSelected: boolean }) => {
+//   const modelUrl = furnitureModels[type];
+//   if (!modelUrl) return null;
+
+//   const { scene } = useGLTF(modelUrl);
+//   // لو عايز تقدر تغير اللون للموديل
+//   scene.traverse((child: any) => {
+//     if (child.isMesh) {
+//       child.castShadow = true;
+//       child.receiveShadow = true;
+//       if (isSelected) child.material.color.set('#00acc1');
+//     }
+//   });
+
+//   return <primitive object={scene} />;
+// };
+
+// export const FurnitureObject = ({
+//   item,
+//   isSelected,
+//   roomBounds,
+//   allItems,
+//   onSelect,
+//   onDrag,
+//   onRotate,
+// }: FurnitureObjectProps) => {
+//   const groupRef = useRef<THREE.Group>(null);
+//   const transformRef = useRef<any>(null);
+//   const { camera, gl } = useThree();
+
+//   useEffect(() => {
+//     if (!transformRef.current) return;
+//     const controls = transformRef.current;
+
+//     const handleChange = () => {
+//       if (groupRef.current) {
+//         const pos = groupRef.current.position;
+//         const rot = groupRef.current.rotation;
+
+//         const maxX = roomBounds.width / 2;
+//         const maxZ = roomBounds.depth / 2;
+
+//         pos.x = Math.max(-maxX, Math.min(maxX, pos.x));
+//         pos.z = Math.max(-maxZ, Math.min(maxZ, pos.z));
+
+//         if (item.isWallMounted) {
+//           pos.y = Math.max(0.5, Math.min(2.5, pos.y));
+//         } else {
+//           pos.y = item.position[1];
+//         }
+
+//         onDrag(item.id, [pos.x, pos.y, pos.z]);
+//         onRotate(item.id, rot.y);
+//       }
+//     };
+
+//     controls.addEventListener('change', handleChange);
+//     controls.addEventListener('dragging-changed', (event: any) => {
+//       if (!groupRef.current) return;
+//       if (!event.value) {
+//         const rot = groupRef.current.rotation.y;
+//         const snappedRot = Math.round(rot / (Math.PI / 2)) * (Math.PI / 2);
+//         groupRef.current.rotation.y = snappedRot;
+//         onRotate(item.id, snappedRot);
+//       }
+//     });
+
+//     return () => {
+//       controls.removeEventListener('change', handleChange);
+//     };
+//   }, [item, roomBounds, onDrag, onRotate]);
+
+//   return (
+//     <group ref={groupRef} position={item.position} rotation={[0, item.rotation, 0]}>
+//       {isSelected && (
+//         <TransformControls
+//           ref={transformRef}
+//           camera={camera}
+//           domElement={gl.domElement}
+//           mode="translate"
+//           showX
+//           showY={item.isWallMounted}
+//           showZ
+//         />
+//       )}
+
+//       <group onClick={(e) => {
+//         e.stopPropagation();
+//         onSelect(item.id);
+//       }}>
+//         <Suspense fallback={null}>
+//           <FurnitureModel type={item.type} isSelected={isSelected} />
+//         </Suspense>
+//       </group>
+
+//       {isSelected && item.dimensions && (
+//         <lineSegments>
+//           <edgesGeometry args={[new THREE.BoxGeometry(
+//             item.dimensions.width,
+//             item.dimensions.height,
+//             item.dimensions.depth
+//           )]} />
+//           <lineBasicMaterial color="#00acc1" linewidth={3} />
+//         </lineSegments>
+//       )}
+//     </group>
+//   );
+// };
