@@ -41,7 +41,7 @@ const { walls, setWalls, addWall, updateWall, removeWall } = usePlannerStore();
   const [hover, setHover] = useState(null); // {type:'point'|'wall', idx}
   const [draggingPoint, setDraggingPoint] = useState(null); // {wallIndex, point:'start'|'end'}
   const [selectedWall, setSelectedWall] = useState(null);
-  const svgRef = useRef();
+  const svgRef = useRef<SVGSVGElement>(null);
 
   // center of SVG (origin in world coords)
   const center = useMemo(() => [width / 2, height / 2], [width, height]);
@@ -49,8 +49,8 @@ const { walls, setWalls, addWall, updateWall, removeWall } = usePlannerStore();
   // when store walls change from elsewhere, we keep local sync (we read directly from store)
   // Draw handlers:
   const onMouseDown = (e) => {
+    if (!svgRef.current) return;
     const rect = svgRef.current.getBoundingClientRect();
-    // if (!rect) return;
     const sx = e.clientX - rect.left;
     const sy = e.clientY - rect.top;
     if (e.button !== 0) return;
@@ -65,8 +65,8 @@ const { walls, setWalls, addWall, updateWall, removeWall } = usePlannerStore();
   };
 
   const onMouseMove = (e) => {
+    if (!svgRef.current) return;
     const rect = svgRef.current.getBoundingClientRect();
-    // if (!rect) return;
     const sx = e.clientX - rect.left;
     const sy = e.clientY - rect.top;
     // update hover: check proximity to points or walls
@@ -128,8 +128,8 @@ const { walls, setWalls, addWall, updateWall, removeWall } = usePlannerStore();
       return;
     }
     if (!drawing) return;
+    if (!svgRef.current) return;
     const rect = svgRef.current.getBoundingClientRect();
-    // if(rect) return;
     const sx = e.clientX - rect.left;
     const sy = e.clientY - rect.top;
     const startWorld = screenToWorld(drawing.start, center, pxPerMeter);

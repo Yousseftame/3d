@@ -337,10 +337,32 @@ export const FurnitureObject = ({
   }, [item.id, item.isWallMounted, item.position, roomBounds, dimensions, onDrag, onRotate]);
 
   return (
-    <group ref={groupRef} position={item.position} rotation={[0, item.rotation, 0]}>
+    <>
+      <group ref={groupRef} position={item.position} rotation={[0, item.rotation, 0]}>
+        <group onClick={(e) => {
+          e.stopPropagation();
+          onSelect(item.id);
+        }}>
+          <DetailedFurniture 
+            type={item.type} 
+            dimensions={dimensions} 
+            color={item.color}
+            isSelected={isSelected}
+          />
+        </group>
+        
+        {isSelected && (
+          <lineSegments>
+            <edgesGeometry args={[new THREE.BoxGeometry(...dimensions)]} />
+            <lineBasicMaterial color="#00acc1" linewidth={3} />
+          </lineSegments>
+        )}
+      </group>
+      
       {isSelected && (
         <TransformControls
           ref={transformRef}
+          object={groupRef.current} // issue of mouse navigation
           camera={camera}
           domElement={gl.domElement}
           mode="translate"
@@ -349,25 +371,7 @@ export const FurnitureObject = ({
           showZ={true}
         />
       )}
-      <group onClick={(e) => {
-        e.stopPropagation();
-        onSelect(item.id);
-      }}>
-        <DetailedFurniture 
-          type={item.type} 
-          dimensions={dimensions} 
-          color={item.color}
-          isSelected={isSelected}
-        />
-      </group>
-      
-      {isSelected && (
-        <lineSegments>
-          <edgesGeometry args={[new THREE.BoxGeometry(...dimensions)]} />
-          <lineBasicMaterial color="#00acc1" linewidth={3} />
-        </lineSegments>
-      )}
-    </group>
+    </>
   );
 };
 
