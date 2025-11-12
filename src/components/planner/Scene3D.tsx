@@ -3,7 +3,9 @@ import { Grid, OrbitControls, PerspectiveCamera, Sky } from '@react-three/drei';
 import { Room } from './Room';
 import { FurnitureObject } from './FurnitureObject';
 import { GridOverlay } from './GridOverlay';
+import { MeasurementLines } from './MeasurementLines';
 import { FurnitureItem } from '@/types/furniture';
+import { useMemo } from 'react';
 
 interface Scene3DProps {
   furniture: FurnitureItem[];
@@ -32,13 +34,21 @@ export const Scene3D = ({
   onRotateItem,
   viewMode,
 }: Scene3DProps) => {
-  const cameraPosition = viewMode === '2d' 
-    ? [0, 10, 0.1] as [number, number, number]
-    : [5, 5, 5] as [number, number, number];
+  const cameraPosition = useMemo(() => 
+    viewMode === '2d' 
+      ? [0, 10, 0.1] as [number, number, number]
+      : [5, 5, 5] as [number, number, number],
+    [viewMode]
+  );
+
+  const selectedItem = useMemo(() => 
+    furniture.find(item => item.id === selectedId) || null,
+    [furniture, selectedId]
+  );
 
   return (
     <div className="w-full h-full bg-muted/30">
-      <Canvas shadows gl={{ preserveDrawingBuffer: true }}>
+      <Canvas shadows gl={{ preserveDrawingBuffer: true }} frameloop="always" dpr={[1, 2]}>
 
 
         {/* Sky  */}
@@ -84,6 +94,19 @@ export const Scene3D = ({
         <Room width={roomWidth} depth={roomDepth} height={3} />
         <GridOverlay width={roomWidth} depth={roomDepth} gridSize={gridSize} visible={showGrid} />
 
+        {/* Invisible ground plane for deselection */}
+        <mesh 
+          position={[0, 0, 0]} 
+          rotation={[-Math.PI / 2, 0, 0]}
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelectItem('');
+          }}
+        >
+          <planeGeometry args={[roomWidth * 2, roomDepth * 2]} />
+          <meshBasicMaterial transparent opacity={0} />
+        </mesh>
+
         {furniture.map((item) => (
           <FurnitureObject
             key={item.id}
@@ -96,6 +119,13 @@ export const Scene3D = ({
             onRotate={onRotateItem}
           />
         ))}
+
+        <MeasurementLines 
+          selectedItem={selectedItem}
+          allItems={furniture}
+          roomWidth={roomWidth}
+          roomDepth={roomDepth}
+        />
 
         <OrbitControls
           makeDefault
