@@ -90,13 +90,70 @@ export const usePlannerStore = create<PlannerState>()(
       },
 
       addFurniture: (definition) => {
-        const { furniture } = get();
+        const { furniture, walls, roomWidth, roomDepth } = get();
         const yPosition = definition.isWallMounted ? 1.5 : definition.dimensions.height / 2;
-
+        
+        // Calculate smart spawn position based on type
+        let spawnPosition: [number, number, number] = [0, yPosition, 0];
+        
+        if (definition.type === 'door' || definition.type === 'window') {
+          // Spawn on wall - try each wall and find valid position
+          const bounds = getRoomBounds(walls, { width: roomWidth, depth: roomDepth });
+          const halfWidth = definition.dimensions.width / 2;
+          const halfDepth = definition.dimensions.depth / 2;
+          
+          // Try positions on each wall (North, South, East, West)
+          const wallPositions: Array<{ pos: [number, number, number], rot: number }> = [
+            { pos: [0, yPosition, bounds.maxZ - halfDepth], rot: 0 }, // North wall
+            { pos: [0, yPosition, bounds.minZ + halfDepth], rot: Math.PI }, // South wall
+            { pos: [bounds.maxX - halfWidth, yPosition, 0], rot: Math.PI / 2 }, // East wall
+            { pos: [bounds.minX + halfWidth, yPosition, 0], rot: -Math.PI / 2 }, // West wall
+          ];
+          
+          // Find first valid wall position without collision
+          for (const wallPos of wallPositions) {
+            const testItem: FurnitureItem = {
+              id: 'temp',
+              type: definition.type,
+              position: wallPos.pos,
+              rotation: wallPos.rot,
+              color: definition.color,
+              name: definition.name,
+              dimensions: { ...definition.dimensions },
+              isWallMounted: definition.isWallMounted,
+            };
+            
+            if (!willCollide(testItem, wallPos.pos, furniture)) {
+              spawnPosition = wallPos.pos;
+              const newItem: FurnitureItem = {
+                id: `${definition.type}-${Date.now()}`,
+                type: definition.type,
+                position: spawnPosition,
+                rotation: wallPos.rot,
+                color: definition.color,
+                name: definition.name,
+                dimensions: { ...definition.dimensions },
+                isWallMounted: definition.isWallMounted,
+              };
+              
+              set({
+                furniture: [...furniture, newItem],
+                selectedId: newItem.id,
+              });
+              toast.success(`Added ${definition.name}`);
+              return;
+            }
+          }
+          
+          // If all wall positions are blocked, try center as fallback
+          spawnPosition = [0, yPosition, 0];
+        }
+        
+        // For regular furniture or fallback, spawn near center
         const newItem: FurnitureItem = {
           id: `${definition.type}-${Date.now()}`,
           type: definition.type,
-          position: [0, yPosition, 0],
+          position: spawnPosition,
           rotation: 0,
           color: definition.color,
           name: definition.name,
@@ -137,9 +194,17 @@ export const usePlannerStore = create<PlannerState>()(
         const clampedX = Math.min(Math.max(position[0], bounds.minX + (box.maxX - box.minX)/2), bounds.maxX - (box.maxX - box.minX)/2);
         const clampedZ = Math.min(Math.max(position[2], bounds.minZ + (box.maxZ - box.minZ)/2), bounds.maxZ - (box.maxZ - box.minZ)/2);
 
+        const clampedPosition: [number, number, number] = [clampedX, position[1], clampedZ];
+
+        // Check for collisions with other items
+        if (willCollide(item, clampedPosition, furniture)) {
+          toast.error('Cannot move: would overlap with another item');
+          return;
+        }
+
         set(state => ({
           furniture: state.furniture.map(f =>
-            f.id === id ? { ...f, position: [clampedX, position[1], clampedZ] } : f
+            f.id === id ? { ...f, position: clampedPosition } : f
           )
         }));
       },
