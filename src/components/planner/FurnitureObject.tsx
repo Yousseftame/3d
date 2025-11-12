@@ -3,6 +3,7 @@ import { useThree } from '@react-three/fiber';
 import { TransformControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { FurnitureItem } from '@/types/furniture';
+import { getBoundingBox } from '@/utils/collision';
 
 interface FurnitureObjectProps {
   item: FurnitureItem;
@@ -277,6 +278,7 @@ export const FurnitureObject = ({
 }: FurnitureObjectProps) => {
   const groupRef = useRef<THREE.Group>(null);
   const transformRef = useRef<any>(null);
+  const previousValidPosition = useRef<[number, number, number]>(item.position);   // previous valid position
   const { camera, gl } = useThree();
   
   const dimensions: [number, number, number] = [
@@ -284,6 +286,13 @@ export const FurnitureObject = ({
     item.dimensions.height,
     item.dimensions.depth
   ];
+
+  // Update previous valid position when item position changes externally
+  useEffect(() => {
+    previousValidPosition.current = item.position;
+    console.log(" Previous update pos", previousValidPosition);
+    
+  }, [item.position]);
 
   useEffect(() => {
     if (transformRef.current) {
@@ -314,7 +323,38 @@ export const FurnitureObject = ({
             pos.y = item.position[1]; // Keep original Y for floor items
           }
           
-          onDrag(item.id, [pos.x, pos.y, pos.z]);
+          const newPosition: [number, number, number] = [pos.x, pos.y, pos.z];
+          
+          // Check for collision with other items
+          const testItem = { ...item, position: newPosition };
+          const hasCollision = allItems.some((otherItem) => {
+            if (otherItem.id === item.id) return false;
+            
+            // Use the collision detection from utils
+            const testBox = getBoundingBox(testItem);
+            const otherBox = getBoundingBox(otherItem);
+            
+            const margin = 0.01;
+            return (
+              testBox.minX - margin < otherBox.maxX &&
+              testBox.maxX + margin > otherBox.minX &&
+              testBox.minY - margin < otherBox.maxY &&
+              testBox.maxY + margin > otherBox.minY &&
+              testBox.minZ - margin < otherBox.maxZ &&
+              testBox.maxZ + margin > otherBox.minZ
+            );
+          });
+          
+          if (hasCollision) {
+            // Revert to previous valid position
+            pos.set(previousValidPosition.current[0], previousValidPosition.current[1], previousValidPosition.current[2]);
+            onDrag(item.id, previousValidPosition.current);
+          } else {
+            // Update previous valid position and notify parent  
+            previousValidPosition.current = newPosition;
+            onDrag(item.id, newPosition);
+          }
+          
           onRotate(item.id, rot.y);
         }
       };
@@ -334,7 +374,7 @@ export const FurnitureObject = ({
         controls.removeEventListener('change', handleChange);
       };
     }
-  }, [item.id, item.isWallMounted, item.position, roomBounds, dimensions, onDrag, onRotate]);
+  }, [item.id, item.isWallMounted, item.position, roomBounds, dimensions, allItems, onDrag, onRotate]);
 
   return (
     <>
@@ -362,7 +402,7 @@ export const FurnitureObject = ({
       {isSelected && (
         <TransformControls
           ref={transformRef}
-          object={groupRef.current} // issue of mouse navigation
+          object={groupRef.current}
           camera={camera}
           domElement={gl.domElement}
           mode="translate"
