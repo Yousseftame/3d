@@ -84,7 +84,7 @@ const Index = () => {
           isDragging={isDragging}
           showGrid={showGrid}
           gridSize={gridSize}
-          onSelectItem={selectItem}
+          onSelectItem={(id) => id === '' ? deselectItem() : selectItem(id)}
           onDragItem={dragItem}
           onRotateItem={rotateItem}
           viewMode={viewMode}
