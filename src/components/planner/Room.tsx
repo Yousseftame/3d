@@ -32,25 +32,25 @@ export const Room = memo(({ width, depth, height }: RoomProps) => {
       {/* Back wall */}
       <mesh position={[0, height / 2, -depth / 2]} receiveShadow castShadow>
         <boxGeometry args={[width, height, 0.2]} />
-        <meshStandardMaterial color="#fafafa" transparent opacity={0.3} />
+        <meshStandardMaterial color="#fafafa" transparent opacity={0.5} />
       </mesh>
 
       {/* Left wall */}
       <mesh position={[-width / 2, height / 2, 0]} receiveShadow castShadow>
         <boxGeometry args={[0.2, height, depth]} />
-        <meshStandardMaterial color="#fafafa" transparent opacity={0.3} />
+        <meshStandardMaterial color="#fafafa" transparent opacity={0.5} />
       </mesh>
 
       {/* Right wall */}
       <mesh position={[width / 2, height / 2, 0]} receiveShadow castShadow>
         <boxGeometry args={[0.2, height, depth]} />
-        <meshStandardMaterial color="#fafafa" transparent opacity={0.3} />
+        <meshStandardMaterial color="#fafafa" transparent opacity={0.5} />
       </mesh>
 
       {/* Front wall */}
       <mesh position={[0, height / 2, depth / 2]} receiveShadow castShadow>
         <boxGeometry args={[width, height, 0.2]} />
-        <meshStandardMaterial color="#fafafa" transparent opacity={0.3} />
+        <meshStandardMaterial color="#fafafa" transparent opacity={0.5} />
       </mesh>
 
       {/* Custom walls from user drawing */}
