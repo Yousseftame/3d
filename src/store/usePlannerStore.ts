@@ -121,6 +121,7 @@ export const usePlannerStore = create<PlannerState>()(
               name: definition.name,
               dimensions: { ...definition.dimensions },
               isWallMounted: definition.isWallMounted,
+              modelPath: definition.modelPath,
             };
             
             if (!willCollide(testItem, wallPos.pos, furniture)) {
@@ -134,6 +135,7 @@ export const usePlannerStore = create<PlannerState>()(
                 name: definition.name,
                 dimensions: { ...definition.dimensions },
                 isWallMounted: definition.isWallMounted,
+                modelPath: definition.modelPath,
               };
               
               set({
@@ -159,6 +161,7 @@ export const usePlannerStore = create<PlannerState>()(
           name: definition.name,
           dimensions: { ...definition.dimensions },
           isWallMounted: definition.isWallMounted,
+          modelPath: definition.modelPath,
         };
 
         set({
@@ -422,7 +425,8 @@ export const usePlannerStore = create<PlannerState>()(
       },
     }),
     {
-      name: 'planner-storage', 
+      name: 'planner-storage',
+      version: 1,
       partialize: (state) => ({
         furniture: state.furniture,
          walls: state.walls, 

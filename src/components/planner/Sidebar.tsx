@@ -1,12 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Box, Layers, Eye, Grid3x3 } from 'lucide-react';
+import { Box, Layers, Eye, Grid3x3, Loader2 } from 'lucide-react';
 import { FurnitureDefinition, FurnitureItem } from '@/types/furniture';
 import { PropertyPanel } from './PropertyPanel';
 import { GridControls } from './GridControls';
 import { KeyboardShortcuts } from './KeyboardShortcuts';
 import { RoomDimensions } from './RoomDimensions';
+import { useFurnitureCatalog } from '@/hooks/useFurnitureCatalog';
 
 interface SidebarProps {
   selectedItem: FurnitureItem | null;
@@ -29,18 +30,6 @@ interface SidebarProps {
   onRoomDepthChange: (depth: number) => void;
 }
 
-const furnitureTypes: FurnitureDefinition[] = [
-  { type: 'counter', name: 'Counter', color: '#8B7355', dimensions: { width: 0.6, height: 0.9, depth: 0.6 }, isWallMounted: false, icon: '📦' },
-  { type: 'cabinet-floor', name: 'Floor Cabinet', color: '#6B5D4F', dimensions: { width: 0.6, height: 0.9, depth: 0.6 }, isWallMounted: false, icon: '🗄️' },
-  { type: 'cabinet-wall', name: 'Wall Cabinet', color: '#7A6A5A', dimensions: { width: 0.6, height: 0.6, depth: 0.35 }, isWallMounted: true, icon: '📋' },
-  { type: 'sink', name: 'Sink', color: '#C0C0C0', dimensions: { width: 0.8, height: 0.9, depth: 0.6 }, isWallMounted: false, icon: '🚰' },
-  { type: 'fridge', name: 'Refrigerator', color: '#E8E8E8', dimensions: { width: 0.7, height: 1.8, depth: 0.7 }, isWallMounted: false, icon: '🧊' },
-  { type: 'oven', name: 'Oven', color: '#2C2C2C', dimensions: { width: 0.6, height: 0.9, depth: 0.6 }, isWallMounted: false, icon: '🔥' },
-  { type: 'dishwasher', name: 'Dishwasher', color: '#D3D3D3', dimensions: { width: 0.6, height: 0.9, depth: 0.6 }, isWallMounted: false, icon: '💧' },
-  { type: 'door', name: 'Door', color: '#8B5A2B', dimensions: { width: 0.9, height: 2.0, depth: 0.1 }, isWallMounted: true, icon: '🚪' },
-  { type: 'window', name: 'Window', color: '#87CEEB', dimensions: { width: 1.2, height: 1.0, depth: 0.1 }, isWallMounted: true, icon: '🪟' },
-];
-
 export const Sidebar = ({
   selectedItem,
   onAddFurniture,
@@ -61,6 +50,8 @@ export const Sidebar = ({
   onRoomWidthChange,
   onRoomDepthChange,
 }: SidebarProps) => {
+  const { catalog, loading, error } = useFurnitureCatalog();
+  
   return (
     <aside className="w-80 bg-sidebar border-r border-sidebar-border p-6 overflow-y-auto">
       <div className="space-y-6">
@@ -124,23 +115,39 @@ export const Sidebar = ({
             <Layers className="w-4 h-4" />
             Add Furniture
           </h3>
-          <div className="grid grid-cols-2 gap-2">
-            {furnitureTypes.map((furniture) => (
-              <Card
-                key={furniture.type}
-                className="p-3 cursor-pointer hover:shadow-md transition-shadow hover:border-primary"
-                onClick={() => onAddFurniture(furniture)}
-              >
-                <div className="text-center">
-                  <div className="text-2xl mb-1">{furniture.icon}</div>
-                  <div className="text-xs font-medium">{furniture.name}</div>
-                  {furniture.isWallMounted && (
-                    <div className="text-xs text-muted-foreground mt-1">Wall</div>
-                  )}
-                </div>
-              </Card>
-            ))}
-          </div>
+          
+          {loading && (
+            <div className="flex items-center justify-center p-4 text-muted-foreground">
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Loading catalog...
+            </div>
+          )}
+          
+          {error && (
+            <div className="p-4 text-sm text-destructive bg-destructive/10 rounded-md">
+              {error}
+            </div>
+          )}
+          
+          {!loading && !error && (
+            <div className="grid grid-cols-2 gap-2">
+              {catalog.map((furniture) => (
+                <Card
+                  key={furniture.type}
+                  className="p-3 cursor-pointer hover:shadow-md transition-shadow hover:border-primary"
+                  onClick={() => onAddFurniture(furniture)}
+                >
+                  <div className="text-center">
+                    <div className="text-2xl mb-1">{furniture.icon}</div>
+                    <div className="text-xs font-medium">{furniture.name}</div>
+                    {furniture.isWallMounted && (
+                      <div className="text-xs text-muted-foreground mt-1">Wall</div>
+                    )}
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
 
         <Separator />

@@ -7,7 +7,10 @@ export type FurnitureType =
   | 'sink'
   | 'dishwasher'
   | 'door'
-  | 'window';
+  | 'window'
+  | 'wall'
+  | 'ceiling-fan'
+  | 'decor';
 
 export interface FurnitureItem {
   id: string;
@@ -22,6 +25,7 @@ export interface FurnitureItem {
     depth: number;
   };
   isWallMounted: boolean;
+  modelPath?: string | null;
 }
 
 export interface FurnitureDefinition {
@@ -35,4 +39,5 @@ export interface FurnitureDefinition {
   };
   isWallMounted: boolean;
   icon: string;
+  modelPath?: string | null;
 }

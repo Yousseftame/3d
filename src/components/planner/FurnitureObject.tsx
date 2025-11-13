@@ -1,9 +1,10 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, Suspense } from 'react';
 import { useThree } from '@react-three/fiber';
 import { TransformControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { FurnitureItem } from '@/types/furniture';
 import { getBoundingBox } from '@/utils/collision';
+import { DynamicModelLoader } from './DynamicModelLoader';
 
 interface FurnitureObjectProps {
   item: FurnitureItem;
@@ -278,7 +279,7 @@ export const FurnitureObject = ({
 }: FurnitureObjectProps) => {
   const groupRef = useRef<THREE.Group>(null);
   const transformRef = useRef<any>(null);
-  const previousValidPosition = useRef<[number, number, number]>(item.position);   // previous valid position
+  const previousValidPosition = useRef<[number, number, number]>(item.position);
   const { camera, gl } = useThree();
   
   const dimensions: [number, number, number] = [
@@ -290,8 +291,6 @@ export const FurnitureObject = ({
   // Update previous valid position when item position changes externally
   useEffect(() => {
     previousValidPosition.current = item.position;
-    console.log(" Previous update pos", previousValidPosition);
-    
   }, [item.position]);
 
   useEffect(() => {
@@ -350,7 +349,7 @@ export const FurnitureObject = ({
             pos.set(previousValidPosition.current[0], previousValidPosition.current[1], previousValidPosition.current[2]);
             onDrag(item.id, previousValidPosition.current);
           } else {
-            // Update previous valid position and notify parent  
+            // Update previous valid position and notify parent
             previousValidPosition.current = newPosition;
             onDrag(item.id, newPosition);
           }
@@ -383,12 +382,23 @@ export const FurnitureObject = ({
           e.stopPropagation();
           onSelect(item.id);
         }}>
-          <DetailedFurniture 
-            type={item.type} 
-            dimensions={dimensions} 
-            color={item.color}
-            isSelected={isSelected}
-          />
+          {item.modelPath ? (
+            <Suspense fallback={null}>
+              <DynamicModelLoader 
+                modelPath={item.modelPath}
+                color={item.color}
+                isSelected={isSelected}
+                dimensions={item.dimensions}
+              />
+            </Suspense>
+          ) : (
+            <DetailedFurniture 
+              type={item.type} 
+              dimensions={dimensions} 
+              color={item.color}
+              isSelected={isSelected}
+            />
+          )}
         </group>
         
         {isSelected && (
