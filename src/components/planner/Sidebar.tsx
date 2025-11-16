@@ -166,7 +166,7 @@ export const Sidebar = ({
           className="w-full justify-start"
         >
           <Trash2 className="w-4 h-4 mr-2" />
-          Delete Item
+          Delete All Items
         </Button>
 
         <Separator />
