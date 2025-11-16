@@ -37,7 +37,7 @@ interface PlannerState {
   setRoomWidth: (width: number) => void;
   setRoomDepth: (depth: number) => void;
 
-
+  deleteAllFurniture:() => void;
   // ---------------------------------
   walls: any[]; 
   setWalls: (walls: any[]) => void;
@@ -82,6 +82,12 @@ export const usePlannerStore = create<PlannerState>()(
       selectedItem: () => {
         const { furniture, selectedId } = get();
         return furniture.find(item => item.id === selectedId) || null;
+      },
+      // function for Delete All Furniture
+
+      deleteAllFurniture: () => {
+        set({ furniture: [] });
+        toast.success("All items deleted");
       },
 
       roomBounds: () => {
