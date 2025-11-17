@@ -5,22 +5,14 @@ import { Slider } from '@/components/ui/slider';
 import { Separator } from '@/components/ui/separator';
 import { Maximize2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
-import Kitchen2DEditor from './Kitchen2DEditor';
+
 import { Room } from './Room';
+import Kitchen2DEditor from './Kitchen2DEditor';
+import { usePlannerStore } from '@/store/usePlannerStore';
 
-interface RoomDimensionsProps {
-  width: number;
-  depth: number;
-  onWidthChange: (width: number) => void;
-  onDepthChange: (depth: number) => void;
-}
-
-export const RoomDimensions = ({
-  width,
-  depth,
-  onWidthChange,
-  onDepthChange,
-}: RoomDimensionsProps) => {
+export const RoomDimensions = () => {
+  const { roomWidth, roomDepth, setRoomWidth, setRoomDepth } = usePlannerStore();
+    
   return (
     <Card className="p-4 space-y-4">
       <div>
@@ -36,8 +28,8 @@ export const RoomDimensions = ({
             <span>Width (m)</span>
             <Input
               type="number"
-              value={width.toFixed(1)}
-              onChange={(e) => onWidthChange(parseFloat(e.target.value) || 3)}
+              value={roomWidth.toFixed(1)}
+              onChange={(e) => setRoomWidth(parseFloat(e.target.value) || 3)}
               min={3}
               max={20}
               step={0.5}
@@ -45,8 +37,8 @@ export const RoomDimensions = ({
             />
           </Label>
           <Slider
-            value={[width]}
-            onValueChange={([value]) => onWidthChange(value)}
+            value={[roomWidth]}
+            onValueChange={([value]) => setRoomWidth(value)}
             min={3}
             max={20}
             step={0.5}
@@ -59,8 +51,8 @@ export const RoomDimensions = ({
             <span>Depth (m)</span>
             <Input
               type="number"
-              value={depth.toFixed(1)}
-              onChange={(e) => onDepthChange(parseFloat(e.target.value) || 3)}
+              value={roomDepth.toFixed(1)}
+              onChange={(e) => setRoomDepth(parseFloat(e.target.value) || 3)}
               min={3}
               max={20}
               step={0.5}
@@ -68,8 +60,8 @@ export const RoomDimensions = ({
             />
           </Label>
           <Slider
-            value={[depth]}
-            onValueChange={([value]) => onDepthChange(value)}
+            value={[roomDepth]}
+            onValueChange={([value]) => setRoomDepth(value)}
             min={3}
             max={20}
             step={0.5}
@@ -91,7 +83,7 @@ export const RoomDimensions = ({
         </TabsContent>
 
         <TabsContent value="3d">
-          <Room width={width} depth={depth} height={3} />
+          <Room width={roomWidth} depth={roomDepth} height={3} />
         </TabsContent>
       </Tabs>
       {/* --------------------------------------------------------------- */}
@@ -99,7 +91,7 @@ export const RoomDimensions = ({
       <Separator />
 
       <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded">
-        <p>Total area: {(width * depth).toFixed(1)} m²</p>
+        <p>Total area: {(roomWidth * roomDepth).toFixed(1)} m²</p>
       </div>
     </Card>
   );

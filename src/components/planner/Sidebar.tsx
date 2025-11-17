@@ -17,10 +17,6 @@ export const Sidebar = () => {
     toggleView,
     viewMode,
     addFurniture,
-    roomWidth,
-    roomDepth,
-    setRoomWidth,
-    setRoomDepth,
   } = usePlannerStore();
 
   return (
@@ -61,12 +57,7 @@ export const Sidebar = () => {
 
         <div>
           <h3 className="text-sm font-semibold mb-3">Room Size</h3>
-          <RoomDimensions
-            width={roomWidth}
-            depth={roomDepth}
-            onWidthChange={setRoomWidth}
-            onDepthChange={setRoomDepth}
-          />
+          <RoomDimensions />
         </div>
 
         <Separator />
