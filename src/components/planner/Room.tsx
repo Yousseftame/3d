@@ -1,24 +1,17 @@
-import { usePlannerStore } from '@/store/usePlannerStore';
 import * as THREE from 'three';
-import { memo } from 'react';
+import { usePlannerStore } from '@/store/usePlannerStore';
 
+const height = 3
 
-interface RoomProps {
-  width: number;
-  depth: number;
-  height: number;
-}
-
-export const Room = memo(({ width, depth, height }: RoomProps) => {
-
+export const Room = () => {
+  const { roomWidth , roomDepth } = usePlannerStore()
   const walls = usePlannerStore((state) => state.walls);
-
 
   return (
     <group>
       {/* Floor */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
-        <planeGeometry args={[width, depth]} />
+        <planeGeometry args={[roomWidth, roomDepth]} />
         <meshStandardMaterial 
           color="#f5f5f5" 
           side={THREE.DoubleSide}
@@ -30,26 +23,26 @@ export const Room = memo(({ width, depth, height }: RoomProps) => {
 
       {/* Boundary Walls - All semi-transparent for visibility */}
       {/* Back wall */}
-      <mesh position={[0, height / 2, -depth / 2]} receiveShadow castShadow>
-        <boxGeometry args={[width, height, 0.2]} />
+      <mesh position={[0, height / 2, -roomDepth / 2]} receiveShadow castShadow>
+        <boxGeometry args={[roomWidth, height, 0.2]} />
         <meshStandardMaterial color="#fafafa" transparent opacity={0.5} />
       </mesh>
 
       {/* Left wall */}
-      <mesh position={[-width / 2, height / 2, 0]} receiveShadow castShadow>
-        <boxGeometry args={[0.2, height, depth]} />
+      <mesh position={[-roomWidth / 2, height / 2, 0]} receiveShadow castShadow>
+        <boxGeometry args={[0.2, height, roomDepth]} />
         <meshStandardMaterial color="#fafafa" transparent opacity={0.5} />
       </mesh>
 
       {/* Right wall */}
-      <mesh position={[width / 2, height / 2, 0]} receiveShadow castShadow>
-        <boxGeometry args={[0.2, height, depth]} />
+      <mesh position={[roomWidth / 2, height / 2, 0]} receiveShadow castShadow>
+        <boxGeometry args={[0.2, height, roomDepth]} />
         <meshStandardMaterial color="#fafafa" transparent opacity={0.5} />
       </mesh>
 
       {/* Front wall */}
-      <mesh position={[0, height / 2, depth / 2]} receiveShadow castShadow>
-        <boxGeometry args={[width, height, 0.2]} />
+      <mesh position={[0, height / 2, roomDepth / 2]} receiveShadow castShadow>
+        <boxGeometry args={[roomWidth, height, 0.2]} />
         <meshStandardMaterial color="#fafafa" transparent opacity={0.5} />
       </mesh>
 
@@ -79,7 +72,6 @@ export const Room = memo(({ width, depth, height }: RoomProps) => {
       
     </group>
   );
-});
+};
 
 Room.displayName = 'Room';
-

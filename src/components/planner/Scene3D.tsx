@@ -81,7 +81,7 @@ export const Scene3D = () => {
         />
         <pointLight position={[-10, 10, -10]} intensity={0.5} />
 
-        <Room width={roomWidth} depth={roomDepth} height={3} />
+        <Room />
         <GridOverlay />
 
         {/* Invisible ground plane for deselection */}
