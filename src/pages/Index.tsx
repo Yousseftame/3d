@@ -6,33 +6,18 @@ import { usePlannerStore } from '@/store/usePlannerStore';
 const Index = () => {
   const {
     furniture,
-    selectedId,
-    isDragging,
-    viewMode,
     snapToGrid,
     gridSize,
     showGrid,
-    roomWidth,
-    roomDepth,
     selectedItem,
     roomBounds,
-    addFurniture,
-    selectItem,
     deselectItem,
-    setIsDragging,
-    dragItem,
-    rotateItem,
-    updateDimensions,
     updatePosition,
     rotateSelected,
     deleteSelected,
     duplicateSelected,
-    toggleView,
     toggleSnap,
     toggleGrid,
-    setGridSize,
-    setRoomWidth,
-    setRoomDepth,
   } = usePlannerStore();
 
   // Keyboard controls
@@ -57,19 +42,7 @@ const Index = () => {
       <Sidebar  />
       
       <main className="flex-1 relative">
-        <Scene3D
-          furniture={furniture}
-          selectedId={selectedId}
-          roomWidth={roomWidth}
-          roomDepth={roomDepth}
-          isDragging={isDragging}
-          showGrid={showGrid}
-          gridSize={gridSize}
-          onSelectItem={(id) => id === '' ? deselectItem() : selectItem(id)}
-          onDragItem={dragItem}
-          onRotateItem={rotateItem}
-          viewMode={viewMode}
-        />
+        <Scene3D />
       </main>
     </div>
   );

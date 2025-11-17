@@ -1,39 +1,30 @@
+import { useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Grid, OrbitControls, PerspectiveCamera, Sky } from '@react-three/drei';
+
 import { Room } from './Room';
 import { FurnitureObject } from './FurnitureObject';
 import { GridOverlay } from './GridOverlay';
 import { MeasurementLines } from './MeasurementLines';
-import { FurnitureItem } from '@/types/furniture';
-import { useMemo } from 'react';
+import { usePlannerStore } from '@/store/usePlannerStore';
 
-interface Scene3DProps {
-  furniture: FurnitureItem[];
-  selectedId: string | null;
-  roomWidth: number;
-  roomDepth: number;
-  isDragging: boolean;
-  showGrid: boolean;
-  gridSize: number;
-  onSelectItem: (id: string) => void;
-  onDragItem: (id: string, position: [number, number, number]) => void;
-  onRotateItem: (id: string, rotation: number) => void;
-  viewMode: '3d' | '2d';
-}
+export const Scene3D = () => {
 
-export const Scene3D = ({
-  furniture,
-  selectedId,
-  roomWidth,
-  roomDepth,
-  isDragging,
-  showGrid,
-  gridSize,
-  onSelectItem,
-  onDragItem,
-  onRotateItem,
-  viewMode,
-}: Scene3DProps) => {
+  const {
+    furniture,
+    selectedId,
+    roomWidth,
+    roomDepth,
+    isDragging,
+    showGrid,
+    gridSize,
+    dragItem,
+    rotateItem,
+    viewMode,
+    deselectItem,
+    selectItem
+  } = usePlannerStore();
+
   const cameraPosition = useMemo(() => 
     viewMode === '2d' 
       ? [0, 10, 0.1] as [number, number, number]
@@ -41,7 +32,9 @@ export const Scene3D = ({
     [viewMode]
   );
 
-  const selectedItem = useMemo(() => 
+  const onSelectItem = (id) => id === '' ? deselectItem() : selectItem(id)
+
+  const getSelectedItem = useMemo(() => 
     furniture.find(item => item.id === selectedId) || null,
     [furniture, selectedId]
   );
@@ -115,13 +108,13 @@ export const Scene3D = ({
             roomBounds={{ width: roomWidth, depth: roomDepth }}
             allItems={furniture}
             onSelect={onSelectItem}
-            onDrag={onDragItem}
-            onRotate={onRotateItem}
+            onDrag={dragItem}
+            onRotate={rotateItem}
           />
         ))}
 
         <MeasurementLines 
-          selectedItem={selectedItem}
+          selectedItem={getSelectedItem}
           allItems={furniture}
           roomWidth={roomWidth}
           roomDepth={roomDepth}
