@@ -15,8 +15,6 @@ export const Scene3D = () => {
     roomWidth,
     roomDepth,
     isDragging,
-    showGrid,
-    gridSize,
     dragItem,
     rotateItem,
     viewMode,
@@ -40,41 +38,41 @@ export const Scene3D = () => {
 
   return (
     <div className="w-full h-full bg-muted/30">
-      <Canvas shadows gl={{ preserveDrawingBuffer: true }} frameloop="always" dpr={[1, 2]}>
-
-
+      <Canvas
+        shadows
+        gl={{ preserveDrawingBuffer: true }}
+        frameloop="always"
+        dpr={[1, 2]}
+      >
         {/* Sky  */}
         <Sky
-            distance={450000} 
-            sunPosition={[100, 20, 100]} // Sun
-            inclination={0.49} // Light angle
-            azimuth={0.25} // light diriction  
-          />
+          distance={450000}
+          sunPosition={[100, 20, 100]} // Sun
+          inclination={0.49} // Light angle
+          azimuth={0.25} // light diriction
+        />
         {/* Sky  */}
 
-  
         {/* Grid  */}
         <Grid
-          position={[0, 0.01, 0]} 
-          args={[5, 5]} 
-          cellSize={1} 
+          position={[0, 0.01, 0]}
+          args={[5, 5]}
+          cellSize={1}
           cellThickness={0.8}
           cellColor="#6f6f6f"
           sectionSize={10}
-          sectionThickness={.5}
+          sectionThickness={0.5}
           sectionColor="#444"
           fadeDistance={40}
           fadeStrength={1}
-          infiniteGrid 
+          infiniteGrid
         />
         {/* Grid  */}
 
-        
-
         <PerspectiveCamera makeDefault position={cameraPosition} />
-        
+
         <ambientLight intensity={0.6} />
-        <directionalLight 
+        <directionalLight
           position={[10, 10, 5]}
           intensity={1}
           castShadow
@@ -84,15 +82,15 @@ export const Scene3D = () => {
         <pointLight position={[-10, 10, -10]} intensity={0.5} />
 
         <Room width={roomWidth} depth={roomDepth} height={3} />
-        <GridOverlay width={roomWidth} depth={roomDepth} gridSize={gridSize} visible={showGrid} />
+        <GridOverlay />
 
         {/* Invisible ground plane for deselection */}
-        <mesh 
-          position={[0, 0, 0]} 
+        <mesh
+          position={[0, 0, 0]}
           rotation={[-Math.PI / 2, 0, 0]}
           onClick={(e) => {
             e.stopPropagation();
-            onSelectItem('');
+            onSelectItem("");
           }}
         >
           <planeGeometry args={[roomWidth * 2, roomDepth * 2]} />
@@ -112,7 +110,7 @@ export const Scene3D = () => {
           />
         ))}
 
-        <MeasurementLines 
+        <MeasurementLines
           selectedItem={getSelectedItem}
           allItems={furniture}
           roomWidth={roomWidth}
@@ -123,11 +121,11 @@ export const Scene3D = () => {
           makeDefault
           enablePan={!isDragging}
           enableZoom={!isDragging}
-          enableRotate={viewMode === '3d' && !isDragging}
+          enableRotate={viewMode === "3d" && !isDragging}
           minDistance={3}
           maxDistance={15}
-          maxPolarAngle={viewMode === '2d' ? 0 : Math.PI / 2.1}
-          minPolarAngle={viewMode === '2d' ? 0 : 0}
+          maxPolarAngle={viewMode === "2d" ? 0 : Math.PI / 2.1}
+          minPolarAngle={viewMode === "2d" ? 0 : 0}
         />
       </Canvas>
     </div>
