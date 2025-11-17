@@ -1,39 +1,24 @@
-import { useEffect, useCallback } from 'react';
-import { FurnitureItem } from '@/types/furniture';
-import { willCollide } from '@/utils/collision';
 import { toast } from 'sonner';
+import { useEffect, useCallback } from 'react';
 
-interface UseKeyboardControlsProps {
-  selectedItem: FurnitureItem | null;
-  furniture: FurnitureItem[];
-  roomBounds: { width: number; depth: number };
-  gridSize: number;
-  snapToGrid: boolean;
-  showGrid: boolean;
-  onUpdatePosition: (axis: 'x' | 'y' | 'z', value: number) => void;
-  onRotate: () => void;
-  onDelete: () => void;
-  onDuplicate: () => void;
-  onDeselect: () => void;
-  onToggleGrid: () => void;
-  onToggleSnap: () => void;
-}
+import { willCollide } from '@/utils/collision';
+import { usePlannerStore } from '@/store/usePlannerStore';
 
-export const useKeyboardControls = ({
-  selectedItem,
-  furniture,
-  roomBounds,
-  gridSize,
-  snapToGrid,
-  showGrid,
-  onUpdatePosition,
-  onRotate,
-  onDelete,
-  onDuplicate,
-  onDeselect,
-  onToggleGrid,
-  onToggleSnap,
-}: UseKeyboardControlsProps) => {
+export const useKeyboardControls = () => {
+  const {
+    selectedItem,
+    furniture,
+    roomBounds,
+    gridSize,
+    updatePosition,
+    rotateSelected,
+    deleteSelected,
+    duplicateSelected,
+    deselectItem,
+    toggleGrid,
+    toggleSnap
+  } = usePlannerStore();
+
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     // Check if user is typing in an input field
     const target = e.target as HTMLElement;
@@ -44,42 +29,42 @@ export const useKeyboardControls = ({
     // Escape to deselect
     if (e.key === 'Escape') {
       e.preventDefault();
-      onDeselect();
+      deselectItem();
       return;
     }
 
     // Toggle grid visibility with 'G'
     if (e.key.toLowerCase() === 'g' && !e.ctrlKey && !e.metaKey) {
       e.preventDefault();
-      onToggleGrid();
+      toggleGrid();
       return;
     }
 
     // Toggle snap to grid with 'S'
     if (e.key.toLowerCase() === 's' && !e.ctrlKey && !e.metaKey) {
       e.preventDefault();
-      onToggleSnap();
+      toggleSnap();
       return;
     }
 
     // Delete selected item with Delete or Backspace
     if ((e.key === 'Delete' || e.key === 'Backspace') && selectedItem) {
       e.preventDefault();
-      onDelete();
+      deleteSelected();
       return;
     }
 
     // Rotate selected item with 'R'
     if (e.key.toLowerCase() === 'r' && !e.ctrlKey && !e.metaKey && selectedItem) {
       e.preventDefault();
-      onRotate();
+      rotateSelected();
       return;
     }
 
     // Duplicate selected item with Ctrl+D or Cmd+D
     if (e.key.toLowerCase() === 'd' && (e.ctrlKey || e.metaKey) && selectedItem) {
       e.preventDefault();
-      onDuplicate();
+      duplicateSelected();
       return;
     }
 
@@ -194,29 +179,29 @@ export const useKeyboardControls = ({
       // Check for collisions
       if (!willCollide(selectedItem, newPosition, furniture)) {
         if (axis === 'x') {
-          onUpdatePosition('x', newPosition[0]);
+          updatePosition('x', newPosition[0]);
         } else if (axis === 'y') {
-          onUpdatePosition('y', newPosition[1]);
+          updatePosition('y', newPosition[1]);
         } else if (axis === 'z') {
-          onUpdatePosition('z', newPosition[2]);
+          updatePosition('z', newPosition[2]);
         }
       } else {
         toast.error('Cannot move: would overlap with another item');
       }
     }
-  }, [
-    selectedItem,
-    furniture,
-    roomBounds,
-    gridSize,
-    onUpdatePosition,
-    onRotate,
-    onDelete,
-    onDuplicate,
-    onDeselect,
-    onToggleGrid,
-    onToggleSnap,
-  ]);
+  },  [
+  selectedItem,
+  furniture,
+  roomBounds,
+  gridSize,
+  updatePosition,
+  rotateSelected,
+  deleteSelected,
+  deselectItem,
+  toggleGrid,
+  toggleSnap,
+  duplicateSelected
+]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
