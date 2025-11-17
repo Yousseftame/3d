@@ -1,20 +1,20 @@
 import { useMemo } from 'react';
-import * as THREE from 'three';
+import { usePlannerStore } from '@/store/usePlannerStore';
 
-interface GridOverlayProps {
-  width: number;
-  depth: number;
-  gridSize: number;
-  visible: boolean;
-}
+export const GridOverlay = () => {
+  const {
+    roomWidth,
+    roomDepth,
+    showGrid: visible,
+    gridSize,
+  } = usePlannerStore();
 
-export const GridOverlay = ({ width, depth, gridSize, visible }: GridOverlayProps) => {
   const gridLines = useMemo(() => {
     if (!visible) return null;
 
     const lines: JSX.Element[] = [];
-    const halfWidth = width / 2;
-    const halfDepth = depth / 2;
+    const halfWidth = roomWidth / 2;
+    const halfDepth = roomDepth / 2;
 
     // Vertical lines (along Z axis)
     for (let x = -halfWidth; x <= halfWidth; x += gridSize) {
@@ -59,7 +59,7 @@ export const GridOverlay = ({ width, depth, gridSize, visible }: GridOverlayProp
     }
 
     return lines;
-  }, [width, depth, gridSize, visible]);
+  }, [roomWidth, roomDepth, gridSize, visible]);
 
   if (!visible) return null;
 
