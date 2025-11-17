@@ -9,7 +9,6 @@ import { MeasurementLines } from './MeasurementLines';
 import { usePlannerStore } from '@/store/usePlannerStore';
 
 export const Scene3D = () => {
-
   const {
     furniture,
     selectedId,
