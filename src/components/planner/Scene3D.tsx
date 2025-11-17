@@ -110,12 +110,7 @@ export const Scene3D = () => {
           />
         ))}
 
-        <MeasurementLines
-          selectedItem={getSelectedItem}
-          allItems={furniture}
-          roomWidth={roomWidth}
-          roomDepth={roomDepth}
-        />
+        <MeasurementLines selectedItem={getSelectedItem} />
 
         <OrbitControls
           makeDefault

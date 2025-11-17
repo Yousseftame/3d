@@ -1,16 +1,14 @@
-import { Line, Text } from '@react-three/drei';
+import { usePlannerStore } from '@/store/usePlannerStore';
 import { FurnitureItem } from '@/types/furniture';
-import * as THREE from 'three';
-import { useMemo, memo } from 'react';
+import { Line, Text } from '@react-three/drei';
+import { memo, useMemo } from 'react';
 
 interface MeasurementLinesProps {
   selectedItem: FurnitureItem | null;
-  allItems: FurnitureItem[];
-  roomWidth: number;
-  roomDepth: number;
 }
 
-export const MeasurementLines = memo(({ selectedItem, allItems, roomWidth, roomDepth }: MeasurementLinesProps) => {
+export const MeasurementLines = memo(({selectedItem}:MeasurementLinesProps) => {
+  const { furniture , roomWidth , roomDepth} = usePlannerStore()
   const measurements = useMemo(() => {
     if (!selectedItem) return null;
 
@@ -44,7 +42,7 @@ export const MeasurementLines = memo(({ selectedItem, allItems, roomWidth, roomD
     const textHeight = lineHeight + 0.3;
 
     // Find nearest furniture in each direction
-    const nearbyFurniture = allItems
+    const nearbyFurniture = furniture
       .filter(item => item.id !== selectedItem.id)
       .map(item => {
         const itemCos = Math.abs(Math.cos(item.rotation));
@@ -93,7 +91,7 @@ export const MeasurementLines = memo(({ selectedItem, allItems, roomWidth, roomD
       selectedMinX, selectedMaxX, selectedMinZ, selectedMaxZ,
       closestLeft, closestRight, closestBack, closestFront
     };
-  }, [selectedItem, allItems, roomWidth, roomDepth]);
+  }, [selectedItem, furniture, roomWidth, roomDepth]);
 
   if (!measurements) return null;
 
