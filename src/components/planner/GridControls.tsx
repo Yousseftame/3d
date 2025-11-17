@@ -4,15 +4,8 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Grid3x3, Ruler } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { usePlannerStore } from '@/store/usePlannerStore';
 
-interface GridControlsProps {
-  snapToGrid: boolean;
-  gridSize: number;
-  showGrid: boolean;
-  onToggleSnap: () => void;
-  onToggleGrid: () => void;
-  onGridSizeChange: (size: number) => void;
-}
 
 const GRID_SIZES = [
   { label: '30cm', value: 0.3 },
@@ -20,14 +13,17 @@ const GRID_SIZES = [
   { label: '90cm', value: 0.9 },
 ];
 
-export const GridControls = ({
-  snapToGrid,
-  gridSize,
-  showGrid,
-  onToggleSnap,
-  onToggleGrid,
-  onGridSizeChange,
-}: GridControlsProps) => {
+export const GridControls = () => {
+
+  const {
+    snapToGrid,
+    gridSize,
+    showGrid,
+    toggleSnap,
+    setGridSize,
+    toggleGrid,
+  } = usePlannerStore();
+    
   return (
     <Card className="p-4 space-y-4">
       <div>
@@ -45,7 +41,7 @@ export const GridControls = ({
           <Switch
             id="show-grid"
             checked={showGrid}
-            onCheckedChange={onToggleGrid}
+            onCheckedChange={toggleGrid}
           />
         </div>
 
@@ -56,7 +52,7 @@ export const GridControls = ({
           <Switch
             id="snap-grid"
             checked={snapToGrid}
-            onCheckedChange={onToggleSnap}
+            onCheckedChange={toggleSnap}
           />
         </div>
       </div>
@@ -74,7 +70,7 @@ export const GridControls = ({
               key={size.value}
               variant={gridSize === size.value ? 'default' : 'outline'}
               size="sm"
-              onClick={() => onGridSizeChange(size.value)}
+              onClick={() => setGridSize(size.value)}
               className="text-xs"
               disabled={!showGrid && !snapToGrid}
             >

@@ -1,59 +1,27 @@
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Box, Layers, Eye, Grid3x3, Loader2, Trash2 } from 'lucide-react';
-import { FurnitureDefinition, FurnitureItem } from '@/types/furniture';
-import { PropertyPanel } from './PropertyPanel';
-import { GridControls } from './GridControls';
-import { KeyboardShortcuts } from './KeyboardShortcuts';
-import { RoomDimensions } from './RoomDimensions';
-import { useFurnitureCatalog } from '@/hooks/useFurnitureCatalog';
-import { usePlannerStore } from '@/store/usePlannerStore';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { useFurnitureCatalog } from "@/hooks/useFurnitureCatalog";
+import { Box, Eye, Grid3x3, Layers, Loader2, Trash2 } from "lucide-react";
 
-interface SidebarProps {
-  selectedItem: FurnitureItem | null;
-  onAddFurniture: (type: FurnitureDefinition) => void;
-  onUpdateDimensions: (dimension: 'width' | 'height' | 'depth', value: number) => void;
-  onUpdatePosition: (axis: 'x' | 'y' | 'z', value: number) => void;
-  onRotateSelected: () => void;
-  onDeleteSelected: () => void;
-  onToggleView: () => void;
-  viewMode: '3d' | '2d';
-  snapToGrid: boolean;
-  gridSize: number;
-  showGrid: boolean;
-  onToggleSnap: () => void;
-  onToggleGrid: () => void;
-  onGridSizeChange: (size: number) => void;
-  roomWidth: number;
-  roomDepth: number;
-  onRoomWidthChange: (width: number) => void;
-  onRoomDepthChange: (depth: number) => void;
-}
+import { GridControls } from "./GridControls";
+import { RoomDimensions } from "./RoomDimensions";
+import { KeyboardShortcuts } from "./KeyboardShortcuts";
+import { usePlannerStore } from "@/store/usePlannerStore";
 
-export const Sidebar = ({
-  selectedItem,
-  onAddFurniture,
-  onUpdateDimensions,
-  onUpdatePosition,
-  onRotateSelected,
-  onDeleteSelected,
-  onToggleView,
-  viewMode,
-  snapToGrid,
-  gridSize,
-  showGrid,
-  onToggleSnap,
-  onToggleGrid,
-  onGridSizeChange,
-  roomWidth,
-  roomDepth,
-  onRoomWidthChange,
-  onRoomDepthChange,
-}: SidebarProps) => {
+export const Sidebar = () => {
   const { catalog, loading, error } = useFurnitureCatalog();
-  
-  const {deleteAllFurniture} = usePlannerStore();
+
+  const {
+    deleteAllFurniture,
+    toggleView,
+    viewMode,
+    addFurniture,
+    roomWidth,
+    roomDepth,
+    setRoomWidth,
+    setRoomDepth,
+  } = usePlannerStore();
 
   return (
     <aside className="w-80 bg-sidebar border-r border-sidebar-border p-6 overflow-y-auto">
@@ -76,7 +44,7 @@ export const Sidebar = ({
             View Controls
           </h3>
           <Button
-            onClick={onToggleView}
+            onClick={toggleView}
             variant="outline"
             className="w-full justify-start"
           >
@@ -96,8 +64,8 @@ export const Sidebar = ({
           <RoomDimensions
             width={roomWidth}
             depth={roomDepth}
-            onWidthChange={onRoomWidthChange}
-            onDepthChange={onRoomDepthChange}
+            onWidthChange={setRoomWidth}
+            onDepthChange={setRoomDepth}
           />
         </div>
 
@@ -105,14 +73,7 @@ export const Sidebar = ({
 
         <div>
           <h3 className="text-sm font-semibold mb-3">Grid & Alignment</h3>
-          <GridControls
-            snapToGrid={snapToGrid}
-            gridSize={gridSize}
-            showGrid={showGrid}
-            onToggleSnap={onToggleSnap}
-            onToggleGrid={onToggleGrid}
-            onGridSizeChange={onGridSizeChange}
-          />
+          <GridControls />
         </div>
 
         <Separator />
@@ -142,7 +103,7 @@ export const Sidebar = ({
                 <Card
                   key={furniture.type}
                   className="p-3 cursor-pointer hover:shadow-md transition-shadow hover:border-primary"
-                  onClick={() => onAddFurniture(furniture)}
+                  onClick={() => addFurniture(furniture)}
                 >
                   <div className="text-center">
                     <div className="text-2xl mb-1">{furniture.icon}</div>
@@ -179,13 +140,7 @@ export const Sidebar = ({
 
         <div>
           <h3 className="text-sm font-semibold mb-3">Item Properties</h3>
-          <PropertyPanel
-            selectedItem={selectedItem}
-            onUpdateDimensions={onUpdateDimensions}
-            onUpdatePosition={onUpdatePosition}
-            onRotate={onRotateSelected}
-            onDelete={onDeleteSelected}
-          />
+          {/* <PropertyPanel/> */}
         </div>
 
         <Separator />

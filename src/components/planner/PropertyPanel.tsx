@@ -3,25 +3,21 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
-import { FurnitureItem } from '@/types/furniture';
 import { Trash2, RotateCw, Move, Ruler } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
-interface PropertyPanelProps {
-  selectedItem: FurnitureItem | null;
-  onUpdateDimensions: (dimension: 'width' | 'height' | 'depth', value: number) => void;
-  onUpdatePosition: (axis: 'x' | 'y' | 'z', value: number) => void;
-  onRotate: () => void;
-  onDelete: () => void;
-}
+import { usePlannerStore } from '@/store/usePlannerStore';
 
-export const PropertyPanel = ({
-  selectedItem,
-  onUpdateDimensions,
-  onUpdatePosition,
-  onRotate,
-  onDelete,
-}: PropertyPanelProps) => {
+export const PropertyPanel = () => {
+  const {
+    updateDimensions,
+    updatePosition,
+    rotateSelected,
+    deleteSelected,
+    selectedItem,
+  } = usePlannerStore();
+
+
   if (!selectedItem) {
     return (
       <Card className="p-4 bg-card/50">
@@ -53,7 +49,7 @@ export const PropertyPanel = ({
           </Label>
           <Slider
             value={[selectedItem.dimensions.width]}
-            onValueChange={([value]) => onUpdateDimensions('width', value)}
+            onValueChange={([value]) => updateDimensions('width', value)}
             min={0.3}
             max={3}
             step={0.1}
@@ -67,7 +63,7 @@ export const PropertyPanel = ({
           </Label>
           <Slider
             value={[selectedItem.dimensions.height]}
-            onValueChange={([value]) => onUpdateDimensions('height', value)}
+            onValueChange={([value]) => updateDimensions('height', value)}
             min={0.3}
             max={3}
             step={0.1}
@@ -81,7 +77,7 @@ export const PropertyPanel = ({
           </Label>
           <Slider
             value={[selectedItem.dimensions.depth]}
-            onValueChange={([value]) => onUpdateDimensions('depth', value)}
+            onValueChange={([value]) => updateDimensions('depth', value)}
             min={0.3}
             max={1.5}
             step={0.1}
@@ -105,7 +101,7 @@ export const PropertyPanel = ({
             </Label>
             <Slider
               value={[selectedItem.position[1]]}
-              onValueChange={([value]) => onUpdatePosition('y', value)}
+              onValueChange={([value]) => updatePosition('y', value)}
               min={0.5}
               max={2.5}
               step={0.1}
@@ -120,7 +116,7 @@ export const PropertyPanel = ({
             <Input
               type="number"
               value={selectedItem.position[0].toFixed(2)}
-              onChange={(e) => onUpdatePosition('x', parseFloat(e.target.value))}
+              onChange={(e) => updatePosition('x', parseFloat(e.target.value))}
               step={0.1}
               className="h-8 text-xs"
             />
@@ -130,7 +126,7 @@ export const PropertyPanel = ({
             <Input
               type="number"
               value={selectedItem.position[2].toFixed(2)}
-              onChange={(e) => onUpdatePosition('z', parseFloat(e.target.value))}
+              onChange={(e) => updatePosition('z', parseFloat(e.target.value))}
               step={0.1}
               className="h-8 text-xs"
             />
@@ -142,7 +138,7 @@ export const PropertyPanel = ({
 
       <div className="space-y-2">
         <Button
-          onClick={onRotate}
+          onClick={rotateSelected}
           variant="outline"
           size="sm"
           className="w-full justify-start"
@@ -151,7 +147,7 @@ export const PropertyPanel = ({
           Rotate 90°
         </Button>
         <Button
-          onClick={onDelete}
+          onClick={deleteSelected}
           variant="destructive"
           size="sm"
           className="w-full justify-start"
