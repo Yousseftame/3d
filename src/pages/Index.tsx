@@ -54,26 +54,7 @@ const Index = () => {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      <Sidebar
-        selectedItem={selectedItem()}
-        onAddFurniture={addFurniture}
-        onUpdateDimensions={updateDimensions}
-        onUpdatePosition={updatePosition}
-        onRotateSelected={rotateSelected}
-        onDeleteSelected={deleteSelected}
-        onToggleView={toggleView}
-        viewMode={viewMode}
-        snapToGrid={snapToGrid}
-        gridSize={gridSize}
-        showGrid={showGrid}
-        onToggleSnap={toggleSnap}
-        onToggleGrid={toggleGrid}
-        onGridSizeChange={setGridSize}
-        roomWidth={roomWidth}
-        roomDepth={roomDepth}
-        onRoomWidthChange={setRoomWidth}
-        onRoomDepthChange={setRoomDepth}
-      />
+      <Sidebar  />
       
       <main className="flex-1 relative">
         <Scene3D
