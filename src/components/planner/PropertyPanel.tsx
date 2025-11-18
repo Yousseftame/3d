@@ -45,7 +45,7 @@ export const PropertyPanel = () => {
       <div className="space-y-4">
         <div>
           <Label className="text-xs font-medium mb-2 flex items-center gap-1">
-            Width (m): {item.dimensions.width.toFixed(2)}
+            Width (m): {item.dimensions.width?.toFixed(2)}
           </Label>
           <Slider
             value={[item.dimensions.width]}
@@ -59,7 +59,7 @@ export const PropertyPanel = () => {
 
         <div>
           <Label className="text-xs font-medium mb-2 flex items-center gap-1">
-            Height (m): {item.dimensions.height.toFixed(2)}
+            Height (m): {item.dimensions.height?.toFixed(2)}
           </Label>
           <Slider
             value={[item.dimensions.height]}
@@ -73,7 +73,7 @@ export const PropertyPanel = () => {
 
         <div>
           <Label className="text-xs font-medium mb-2 flex items-center gap-1">
-            Depth (m): {item.dimensions.depth.toFixed(2)}
+            Depth (m): {item.dimensions.depth?.toFixed(2)}
           </Label>
           <Slider
             value={[item.dimensions.depth]}
@@ -97,7 +97,7 @@ export const PropertyPanel = () => {
         {item.isWallMounted && (
           <div>
             <Label className="text-xs font-medium mb-2">
-              Height from floor (m): {item.position[1].toFixed(2)}
+              Height from floor (m): {item.position[1]?.toFixed(2)}
             </Label>
             <Slider
               value={[item.position[1]]}
@@ -112,20 +112,20 @@ export const PropertyPanel = () => {
 
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <Label className="text-xs">X: {item.position[0].toFixed(2)}</Label>
+            <Label className="text-xs">X: {item.position[0]?.toFixed(2)}</Label>
             <Input
               type="number"
-              value={item.position[0].toFixed(2)}
+              value={item.position[0]?.toFixed(2)}
               onChange={(e) => updatePosition("x", parseFloat(e.target.value))}
               step={0.1}
               className="h-8 text-xs"
             />
           </div>
           <div>
-            <Label className="text-xs">Z: {item.position[2].toFixed(2)}</Label>
+            <Label className="text-xs">Z: {item.position[2]?.toFixed(2)}</Label>
             <Input
               type="number"
-              value={item.position[2].toFixed(2)}
+              value={item.position[2]?.toFixed(2)}
               onChange={(e) => updatePosition("z", parseFloat(e.target.value))}
               step={0.1}
               className="h-8 text-xs"
