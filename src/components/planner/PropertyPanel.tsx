@@ -1,12 +1,12 @@
-import { Card } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Slider } from '@/components/ui/slider';
-import { Button } from '@/components/ui/button';
-import { Trash2, RotateCw, Move, Ruler } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
+import { Trash2, RotateCw, Move, Ruler } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
-import { usePlannerStore } from '@/store/usePlannerStore';
+import { usePlannerStore } from "@/store/usePlannerStore";
 
 export const PropertyPanel = () => {
   const {
@@ -14,11 +14,11 @@ export const PropertyPanel = () => {
     updatePosition,
     rotateSelected,
     deleteSelected,
-    selectedItem,
   } = usePlannerStore();
 
+  const item = usePlannerStore((store) => store.selectedItem());
 
-  if (!selectedItem) {
+  if (!item) {
     return (
       <Card className="p-4 bg-card/50">
         <p className="text-sm text-muted-foreground text-center">
@@ -33,10 +33,10 @@ export const PropertyPanel = () => {
       <div>
         <h3 className="font-semibold flex items-center gap-2 mb-3">
           <Ruler className="w-4 h-4 text-primary" />
-          {selectedItem.name}
+          {item.name}
         </h3>
         <p className="text-xs text-muted-foreground">
-          {selectedItem.isWallMounted ? 'Wall-mounted' : 'Floor-mounted'}
+          {item.isWallMounted ? "Wall-mounted" : "Floor-mounted"}
         </p>
       </div>
 
@@ -45,11 +45,11 @@ export const PropertyPanel = () => {
       <div className="space-y-4">
         <div>
           <Label className="text-xs font-medium mb-2 flex items-center gap-1">
-            Width (m): {selectedItem.dimensions.width.toFixed(2)}
+            Width (m): {item.dimensions.width.toFixed(2)}
           </Label>
           <Slider
-            value={[selectedItem.dimensions.width]}
-            onValueChange={([value]) => updateDimensions('width', value)}
+            value={[item.dimensions.width]}
+            onValueChange={([value]) => updateDimensions("width", value)}
             min={0.3}
             max={3}
             step={0.1}
@@ -59,11 +59,11 @@ export const PropertyPanel = () => {
 
         <div>
           <Label className="text-xs font-medium mb-2 flex items-center gap-1">
-            Height (m): {selectedItem.dimensions.height.toFixed(2)}
+            Height (m): {item.dimensions.height.toFixed(2)}
           </Label>
           <Slider
-            value={[selectedItem.dimensions.height]}
-            onValueChange={([value]) => updateDimensions('height', value)}
+            value={[item.dimensions.height]}
+            onValueChange={([value]) => updateDimensions("height", value)}
             min={0.3}
             max={3}
             step={0.1}
@@ -73,11 +73,11 @@ export const PropertyPanel = () => {
 
         <div>
           <Label className="text-xs font-medium mb-2 flex items-center gap-1">
-            Depth (m): {selectedItem.dimensions.depth.toFixed(2)}
+            Depth (m): {item.dimensions.depth.toFixed(2)}
           </Label>
           <Slider
-            value={[selectedItem.dimensions.depth]}
-            onValueChange={([value]) => updateDimensions('depth', value)}
+            value={[item.dimensions.depth]}
+            onValueChange={([value]) => updateDimensions("depth", value)}
             min={0.3}
             max={1.5}
             step={0.1}
@@ -93,15 +93,15 @@ export const PropertyPanel = () => {
           <Move className="w-3 h-3" />
           Position
         </h4>
-        
-        {selectedItem.isWallMounted && (
+
+        {item.isWallMounted && (
           <div>
             <Label className="text-xs font-medium mb-2">
-              Height from floor (m): {selectedItem.position[1].toFixed(2)}
+              Height from floor (m): {item.position[1].toFixed(2)}
             </Label>
             <Slider
-              value={[selectedItem.position[1]]}
-              onValueChange={([value]) => updatePosition('y', value)}
+              value={[item.position[1]]}
+              onValueChange={([value]) => updatePosition("y", value)}
               min={0.5}
               max={2.5}
               step={0.1}
@@ -112,21 +112,21 @@ export const PropertyPanel = () => {
 
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <Label className="text-xs">X: {selectedItem.position[0].toFixed(2)}</Label>
+            <Label className="text-xs">X: {item.position[0].toFixed(2)}</Label>
             <Input
               type="number"
-              value={selectedItem.position[0].toFixed(2)}
-              onChange={(e) => updatePosition('x', parseFloat(e.target.value))}
+              value={item.position[0].toFixed(2)}
+              onChange={(e) => updatePosition("x", parseFloat(e.target.value))}
               step={0.1}
               className="h-8 text-xs"
             />
           </div>
           <div>
-            <Label className="text-xs">Z: {selectedItem.position[2].toFixed(2)}</Label>
+            <Label className="text-xs">Z: {item.position[2].toFixed(2)}</Label>
             <Input
               type="number"
-              value={selectedItem.position[2].toFixed(2)}
-              onChange={(e) => updatePosition('z', parseFloat(e.target.value))}
+              value={item.position[2].toFixed(2)}
+              onChange={(e) => updatePosition("z", parseFloat(e.target.value))}
               step={0.1}
               className="h-8 text-xs"
             />

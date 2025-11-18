@@ -8,6 +8,7 @@ import { GridControls } from "./GridControls";
 import { RoomDimensions } from "./RoomDimensions";
 import { KeyboardShortcuts } from "./KeyboardShortcuts";
 import { usePlannerStore } from "@/store/usePlannerStore";
+import { PropertyPanel } from "./PropertyPanel";
 
 export const Sidebar = () => {
   const { catalog, loading, error } = useFurnitureCatalog();
@@ -131,7 +132,7 @@ export const Sidebar = () => {
 
         <div>
           <h3 className="text-sm font-semibold mb-3">Item Properties</h3>
-          {/* <PropertyPanel/> */}
+          <PropertyPanel/>
         </div>
 
         <Separator />
