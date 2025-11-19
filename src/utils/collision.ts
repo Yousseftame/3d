@@ -41,12 +41,17 @@ export const getBoundingBox = (item: FurnitureItem): BoundingBox => {
   };
 };
 
+// Wall thickness constants
+export const BOUNDARY_WALL_THICKNESS = 0.2;
+export const CUSTOM_WALL_THICKNESS = 0.15;
+
 // ----------------- room bounds computed from walls (separate function) -----------------
 export const getRoomBounds = (
   walls: Wall[] | undefined,
   fallback: { width: number; depth: number }
 ): { minX: number; maxX: number; minZ: number; maxZ: number } => {
   if (!walls || walls.length === 0) {
+    // Use the full room dimensions without wall thickness
     const { width, depth } = fallback;
     return {
       minX: -width / 2,
@@ -59,11 +64,14 @@ export const getRoomBounds = (
   const xs = walls.flatMap((w) => [w.start[0], w.end[0]]);
   const zs = walls.flatMap((w) => [w.start[1], w.end[1]]);
 
+  // Account for wall thickness by subtracting half thickness from bounds
+  const halfThickness = CUSTOM_WALL_THICKNESS / 2;
+
   return {
-    minX: Math.min(...xs),
-    maxX: Math.max(...xs),
-    minZ: Math.min(...zs),
-    maxZ: Math.max(...zs),
+    minX: Math.min(...xs) + halfThickness,
+    maxX: Math.max(...xs) - halfThickness,
+    minZ: Math.min(...zs) + halfThickness,
+    maxZ: Math.max(...zs) - halfThickness,
   };
 };
 

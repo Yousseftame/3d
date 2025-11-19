@@ -83,7 +83,7 @@ export const RoomDimensions = () => {
         </TabsContent>
 
         <TabsContent value="3d">
-          <Room width={roomWidth} depth={roomDepth} height={3} />
+          <Room />
         </TabsContent>
       </Tabs>
       {/* --------------------------------------------------------------- */}
