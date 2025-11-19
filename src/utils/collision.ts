@@ -77,7 +77,7 @@ export const getRoomBounds = (
 
 // ----------------- collision helpers -----------------
 export const checkCollision = (box1: BoundingBox, box2: BoundingBox): boolean => {
-  const margin = 0.01;
+  const margin = 0;
   return (
     box1.minX - margin < box2.maxX &&
     box1.maxX + margin > box2.minX &&
