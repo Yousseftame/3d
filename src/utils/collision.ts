@@ -51,13 +51,14 @@ export const getRoomBounds = (
   fallback: { width: number; depth: number }
 ): { minX: number; maxX: number; minZ: number; maxZ: number } => {
   if (!walls || walls.length === 0) {
-    // Use the full room dimensions without wall thickness
+    // Use the full room dimensions and subtract wall thickness
     const { width, depth } = fallback;
+    const halfThickness = BOUNDARY_WALL_THICKNESS / 2;
     return {
-      minX: -width / 2,
-      maxX: width / 2,
-      minZ: -depth / 2,
-      maxZ: depth / 2,
+      minX: -width / 2 + halfThickness,
+      maxX: width / 2 - halfThickness,
+      minZ: -depth / 2 + halfThickness,
+      maxZ: depth / 2 - halfThickness,
     };
   }
 
