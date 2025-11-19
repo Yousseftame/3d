@@ -202,7 +202,7 @@ export const useKeyboardControls = ({
           onUpdatePosition('z', newPosition[2]);
         }
       } else {
-        toast.error('Cannot move: would overlap with another item');
+        toast.error('Cannot move: would overlap with another item', { id: 'move-collision' });
       }
     }
   }, [

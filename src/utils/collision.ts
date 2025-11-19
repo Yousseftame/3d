@@ -51,28 +51,23 @@ export const getRoomBounds = (
   fallback: { width: number; depth: number }
 ): { minX: number; maxX: number; minZ: number; maxZ: number } => {
   if (!walls || walls.length === 0) {
-    // Use the full room dimensions and subtract wall thickness
     const { width, depth } = fallback;
-    const halfThickness = BOUNDARY_WALL_THICKNESS / 2;
     return {
-      minX: -width / 2 + halfThickness,
-      maxX: width / 2 - halfThickness,
-      minZ: -depth / 2 + halfThickness,
-      maxZ: depth / 2 - halfThickness,
+      minX: -width / 2,
+      maxX: width / 2,
+      minZ: -depth / 2,
+      maxZ: depth / 2,
     };
   }
 
   const xs = walls.flatMap((w) => [w.start[0], w.end[0]]);
   const zs = walls.flatMap((w) => [w.start[1], w.end[1]]);
 
-  // Account for wall thickness by subtracting half thickness from bounds
-  const halfThickness = CUSTOM_WALL_THICKNESS / 2;
-
   return {
-    minX: Math.min(...xs) + halfThickness,
-    maxX: Math.max(...xs) - halfThickness,
-    minZ: Math.min(...zs) + halfThickness,
-    maxZ: Math.max(...zs) - halfThickness,
+    minX: Math.min(...xs),
+    maxX: Math.max(...xs),
+    minZ: Math.min(...zs),
+    maxZ: Math.max(...zs),
   };
 };
 
