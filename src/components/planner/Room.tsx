@@ -8,7 +8,7 @@ export const Room = () => {
   const walls = usePlannerStore((state) => state.walls);
 
   return (
-    <>
+    <group>
       {/* Floor */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <planeGeometry args={[roomWidth, roomDepth]} />
@@ -59,7 +59,7 @@ export const Room = () => {
           </mesh>
         );
       })}
-    </>
+    </group>
   );
 };
 

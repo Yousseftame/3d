@@ -207,7 +207,7 @@ export const usePlannerStore = create<PlannerState>()(
 
         // Check for collisions with other items
         if (willCollide(item, clampedPosition, furniture)) {
-          toast.error('Cannot move: would overlap with another item', { id: 'move-collision' });
+          toast.error('Cannot move: would overlap with another item');
           return;
         }
 
