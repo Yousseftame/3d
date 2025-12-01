@@ -69,4 +69,6 @@ useGLTF.preload('/models/wall/wall.gltf');
 useGLTF.preload('/models/ceiling_fan.gltf/ceiling_fan_1k.gltf');
 useGLTF.preload('/models/Decor/Decor.gltf');
 useGLTF.preload('/models/kitchen_cabinet.gltf/kitchen_cabinet.gltf');
+useGLTF.preload('/models/Dining_Set/Dining_Set.glb');
+useGLTF.preload('/models/table-kitchen/Kitchen_Table.glb');
 

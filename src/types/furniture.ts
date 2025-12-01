@@ -10,7 +10,9 @@ export type FurnitureType =
   | 'window'
   | 'wall'
   | 'ceiling-fan'
-  | 'decor';
+  | 'decor'
+  | 'kitchen-table'
+  'Dining_Set';
 
 export interface FurnitureItem {
   id: string;
