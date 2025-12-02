@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useFurnitureCatalog } from "@/hooks/useFurnitureCatalog";
-import { Box, Eye, Grid3x3, Layers, Loader2, Trash2 } from "lucide-react";
+import { Box, Eye, Grid3x3, Layers, Loader2, Trash2, PenTool, Move3D } from "lucide-react";
 
 import { GridControls } from "./GridControls";
 import { RoomDimensions } from "./RoomDimensions";
@@ -38,20 +38,33 @@ export const Sidebar = () => {
         <div>
           <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
             <Eye className="w-4 h-4" />
-            View Controls
+            View Mode
           </h3>
-          <Button
-            onClick={toggleView}
-            variant="outline"
-            className="w-full justify-start"
-          >
-            {viewMode === "3d" ? (
-              <Grid3x3 className="w-4 h-4 mr-2" />
-            ) : (
-              <Layers className="w-4 h-4 mr-2" />
-            )}
-            {viewMode === "3d" ? "Switch to 2D View" : "Switch to 3D View"}
-          </Button>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              onClick={() => viewMode !== '3d' && toggleView()}
+              variant={viewMode === '3d' ? 'default' : 'outline'}
+              size="sm"
+              className="justify-center"
+            >
+              <Move3D className="w-4 h-4 mr-1" />
+              3D
+            </Button>
+            <Button
+              onClick={() => viewMode !== '2d' && toggleView()}
+              variant={viewMode === '2d' ? 'default' : 'outline'}
+              size="sm"
+              className="justify-center"
+            >
+              <PenTool className="w-4 h-4 mr-1" />
+              2D
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            {viewMode === '2d' 
+              ? 'Floorplan editor for precise wall drawing' 
+              : '3D view for furniture placement'}
+          </p>
         </div>
 
         <Separator />
@@ -139,14 +152,24 @@ export const Sidebar = () => {
 
         <div className="text-xs text-muted-foreground space-y-2">
           <p>
-            <strong>Tips:</strong>
+            <strong>Tips ({viewMode === '2d' ? '2D Editor' : '3D View'}):</strong>
           </p>
-          <ul className="space-y-1 ml-4 list-disc">
-            <li>Click and drag items to move</li>
-            <li>Items stay within room bounds</li>
-            <li>Wall cabinets mount high</li>
-            <li>Use 2D view for precision</li>
-          </ul>
+          {viewMode === '2d' ? (
+            <ul className="space-y-1 ml-4 list-disc">
+              <li>Press <kbd className="bg-muted px-1 rounded">W</kbd> to draw walls</li>
+              <li>Click and drag endpoints to resize</li>
+              <li>Alt + drag to pan the canvas</li>
+              <li>Scroll to zoom in/out</li>
+              <li>Walls auto-snap to grid</li>
+            </ul>
+          ) : (
+            <ul className="space-y-1 ml-4 list-disc">
+              <li>Click and drag items to move</li>
+              <li>Items stay within room bounds</li>
+              <li>Wall cabinets mount high</li>
+              <li>Use 2D view for precise walls</li>
+            </ul>
+          )}
         </div>
       </div>
     </aside>

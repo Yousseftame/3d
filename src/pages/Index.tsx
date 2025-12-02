@@ -1,5 +1,6 @@
 import { Scene3D } from '@/components/planner/Scene3D';
 import { Sidebar } from '@/components/planner/Sidebar';
+import { FloorplanEditor } from '@/components/planner/FloorplanEditor';
 import { useKeyboardControls } from '@/hooks/useKeyboardControls';
 import { usePlannerStore } from '@/store/usePlannerStore';
 
@@ -11,6 +12,7 @@ const Index = () => {
     gridSize,
     snapToGrid,
     showGrid,
+    viewMode,
     updatePosition,
     rotateSelected,
     deleteSelected,
@@ -20,8 +22,8 @@ const Index = () => {
     toggleSnap,
   } = usePlannerStore();
 
-  //  Initialize global keyboard shortcuts (movement, rotate, delete, etc.)
-   useKeyboardControls({
+  // Initialize global keyboard shortcuts (movement, rotate, delete, etc.)
+  useKeyboardControls({
     selectedItem: selectedItem(),
     furniture,
     roomBounds: roomBounds(),
@@ -39,12 +41,16 @@ const Index = () => {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-       {/* Sidebar: tools, furniture list, and property editor */}
-      <Sidebar  />
+      {/* Sidebar: tools, furniture list, and property editor */}
+      <Sidebar />
       
       <main className="flex-1 relative">
-          {/* Main 3D scene canvas */}
-        <Scene3D />
+        {/* Switch between 3D scene and true 2D floorplan editor */}
+        {viewMode === '3d' ? (
+          <Scene3D />
+        ) : (
+          <FloorplanEditor />
+        )}
       </main>
     </div>
   );

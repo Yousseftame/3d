@@ -78,9 +78,9 @@ export const RoomDimensions = () => {
           <TabsTrigger className='border-2 rounded-sm px-4 py-1' value="3d">3D View</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="2d">
+        {/* <TabsContent value="2d">
           <Kitchen2DEditor />
-        </TabsContent>
+        </TabsContent> */}
 
         <TabsContent value="3d">
           <Room />
