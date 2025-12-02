@@ -21,21 +21,37 @@ export const DynamicModelLoader = ({
 }: DynamicModelLoaderProps) => {
   const { scene } = useGLTF(modelPath);
   
-  // Clone the scene to avoid sharing materials between instances
-  const clonedScene = useMemo(() => scene.clone(), [scene]);
+  // Clone and prepare the scene
+  const clonedScene = useMemo(() => {
+    const cloned = scene.clone();
+    return cloned;
+  }, [scene]);
   
-  // Calculate scale to fit target dimensions
-  const scale = useMemo(() => {
+  // Calculate the original size and center
+  const { originalSize, originalCenter } = useMemo(() => {
     const box = new THREE.Box3().setFromObject(clonedScene);
     const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    return { originalSize: size, originalCenter: center };
+  }, [clonedScene]);
+  
+  // Calculate scale to match target dimensions
+  const scale = useMemo(() => {
+    const scaleX = dimensions.width / originalSize.x;
+    const scaleY = dimensions.height / originalSize.y;
+    const scaleZ = dimensions.depth / originalSize.z;
     
-    const scaleX = dimensions.width / size.x;
-    const scaleY = dimensions.height / size.y;
-    const scaleZ = dimensions.depth / size.z;
-    
-    // Use the smallest scale to fit within bounds
-    return Math.min(scaleX, scaleY, scaleZ);
-  }, [clonedScene, dimensions]);
+    return [scaleX, scaleY, scaleZ] as [number, number, number];
+  }, [originalSize, dimensions]);
+  
+  // Calculate position offset to center the scaled model
+  const positionOffset = useMemo(() => {
+    return [
+      -originalCenter.x * scale[0],
+      -originalCenter.y * scale[1],
+      -originalCenter.z * scale[2]
+    ] as [number, number, number];
+  }, [originalCenter, scale]);
   
   // Apply color and selection tint to all meshes
   useMemo(() => {
@@ -44,12 +60,15 @@ export const DynamicModelLoader = ({
         child.castShadow = true;
         child.receiveShadow = true;
         
-        // Apply color or selection highlight
         if (child.material) {
           const material = child.material as THREE.MeshStandardMaterial;
+          // Always tint the base color so catalog color is visible even with textures
+          material.color = new THREE.Color(color);
+
+          // Apply selection highlight on top
           if (isSelected) {
             material.emissive = new THREE.Color('#00acc1');
-            material.emissiveIntensity = 0.3;
+            material.emissiveIntensity = 0.4;
           } else {
             material.emissive = new THREE.Color(0x000000);
             material.emissiveIntensity = 0;
@@ -59,7 +78,7 @@ export const DynamicModelLoader = ({
     });
   }, [clonedScene, color, isSelected]);
   
-  return <primitive object={clonedScene} scale={scale} />;
+  return <primitive object={clonedScene} scale={scale} position={positionOffset} />;
 };
 
 // Preload common models
@@ -71,4 +90,4 @@ useGLTF.preload('/models/Decor/Decor.gltf');
 useGLTF.preload('/models/kitchen_cabinet.gltf/kitchen_cabinet.gltf');
 useGLTF.preload('/models/Dining_Set/Dining_Set.glb');
 useGLTF.preload('/models/table-kitchen/Kitchen_Table.glb');
-
+useGLTF.preload('/models/tv/Tv.glb'); 

@@ -3,8 +3,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { Trash2, RotateCw, Move, Ruler } from "lucide-react";
+import { Trash2, RotateCw, Move, Ruler, Palette } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { useState, useEffect } from "react";
 
 import { usePlannerStore } from "@/store/usePlannerStore";
 
@@ -12,11 +13,22 @@ export const PropertyPanel = () => {
   const {
     updateDimensions,
     updatePosition,
+    updateColor,
     rotateSelected,
     deleteSelected,
   } = usePlannerStore();
 
   const item = usePlannerStore((store) => store.selectedItem());
+  
+  // Local state for color to prevent re-renders on every drag
+  const [localColor, setLocalColor] = useState(item?.color || "#ffffff");
+  
+  // Sync local color when item changes
+  useEffect(() => {
+    if (item?.color) {
+      setLocalColor(item.color);
+    }
+  }, [item?.color]);
 
   if (!item) {
     return (
@@ -83,6 +95,41 @@ export const PropertyPanel = () => {
             step={0.1}
             className="mt-2"
           />
+        </div>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-3">
+        <h4 className="text-xs font-semibold flex items-center gap-2">
+          <Palette className="w-3 h-3" />
+          Appearance
+        </h4>
+        
+        <div>
+          <Label className="text-xs font-medium mb-2">Color</Label>
+          <div className="flex gap-2 items-center mt-2">
+            <Input
+              type="color"
+              value={localColor}
+              onChange={(e) => setLocalColor(e.target.value)}
+              onBlur={() => updateColor(localColor)}
+              className="w-16 h-10 p-1 cursor-pointer"
+            />
+            <Input
+              type="text"
+              value={localColor}
+              onChange={(e) => setLocalColor(e.target.value)}
+              onBlur={() => updateColor(localColor)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  updateColor(localColor);
+                }
+              }}
+              className="h-10 text-xs font-mono"
+              placeholder="#000000"
+            />
+          </div>
         </div>
       </div>
 

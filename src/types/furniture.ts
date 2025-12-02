@@ -12,7 +12,8 @@ export type FurnitureType =
   | 'ceiling-fan'
   | 'decor'
   | 'kitchen-table'
-  'Dining_Set';
+  | 'Dining_Set'
+  | 'tv';
 
 export interface FurnitureItem {
   id: string;

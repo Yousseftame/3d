@@ -227,6 +227,7 @@ const DetailedFurniture = ({
       );
 
     case 'window':
+    case 'tv':
       return (
         <group>
           {/* Window frame */}

@@ -27,6 +27,7 @@ interface PlannerState {
   rotateItem: (id: string, rotation: number) => void;
   updateDimensions: (dimension: 'width' | 'height' | 'depth', value: number) => void;
   updatePosition: (axis: 'x' | 'y' | 'z', value: number) => void;
+  updateColor: (color: string) => void;
   rotateSelected: () => void;
   deleteSelected: () => void;
   duplicateSelected: () => void;
@@ -330,6 +331,18 @@ export const usePlannerStore = create<PlannerState>()(
         }));
       },
       // -----------------------------------------------------------------
+
+      updateColor: (color) => {
+        const { selectedId } = get();
+        if (!selectedId) return;
+
+        set((state) => ({
+          furniture: state.furniture.map(item =>
+            item.id === selectedId ? { ...item, color } : item
+          )
+        }));
+        toast.success('Color updated');
+      },
 
       rotateSelected: () => {
         const { selectedId, furniture } = get();
