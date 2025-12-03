@@ -91,3 +91,4 @@ useGLTF.preload('/models/kitchen_cabinet.gltf/kitchen_cabinet.gltf');
 useGLTF.preload('/models/Dining_Set/Dining_Set.glb');
 useGLTF.preload('/models/table-kitchen/Kitchen_Table.glb');
 useGLTF.preload('/models/tv/Tv.glb'); 
+useGLTF.preload('/models/FullKitchen/FullKitchen.glb'); 

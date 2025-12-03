@@ -196,5 +196,17 @@
     "isWallMounted": true,
     "icon": "📺",
     "modelPath": "/models/tv/Tv.glb"
+  },
+  {
+    "type": "tv",
+    "name": " FullKitchen",
+    "dimensions": {
+      "width": 0.8,
+      "height": 0.4,
+      "depth": 0.1
+    },
+    "isWallMounted": false,
+    "icon": "🍽️🪑",
+    "modelPath": "/models/FullKitchen/FullKitchen.glb"
   }
 ]

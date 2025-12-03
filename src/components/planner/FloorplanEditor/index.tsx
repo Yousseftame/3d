@@ -19,10 +19,54 @@ import { toast } from 'sonner';
 
 const DEFAULT_WALL_THICKNESS = 0.15; // 15cm walls
 const DEFAULT_GRID_SIZE = 1; // 1 meter
+const RECT_EPSILON = 0.01;
+
+type RectWallIndices = {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+};
+
+/**
+ * Detect whether the current walls form a simple axis-aligned
+ * rectangular room (four walls) around the origin.
+ * Returns the indices of the four walls if so, otherwise null.
+ */
+const detectBaseRectangle = (rawWalls: any[]): RectWallIndices | null => {
+  if (rawWalls.length !== 4) return null;
+
+  const horizontals: Array<{ index: number; y: number }> = [];
+  const verticals: Array<{ index: number; x: number }> = [];
+
+  rawWalls.forEach((w, index) => {
+    const [sx, sy] = w.start;
+    const [ex, ey] = w.end;
+
+    if (Math.abs(sy - ey) < RECT_EPSILON) {
+      horizontals.push({ index, y: sy });
+    } else if (Math.abs(sx - ex) < RECT_EPSILON) {
+      verticals.push({ index, x: sx });
+    }
+  });
+
+  if (horizontals.length !== 2 || verticals.length !== 2) return null;
+
+  horizontals.sort((a, b) => a.y - b.y); // bottom (-) then top (+)
+  verticals.sort((a, b) => a.x - b.x);   // left (-) then right (+)
+
+  return {
+    bottom: horizontals[0].index,
+    top: horizontals[1].index,
+    left: verticals[0].index,
+    right: verticals[1].index,
+  };
+};
 
 export const FloorplanEditor: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const isInitialized = useRef(false);
 
   // Store state
   const {
@@ -37,16 +81,19 @@ export const FloorplanEditor: React.FC = () => {
     deselectItem,
     roomWidth,
     roomDepth,
+    setRoomWidth,
+    setRoomDepth,
     snapToGrid: snapEnabled,
     gridSize,
   } = usePlannerStore();
 
-  // Initialize default walls if none exist
+  // Initialize default walls ONLY on first mount if store is empty
   useEffect(() => {
-    if (storeWalls.length === 0) {
+    if (!isInitialized.current && storeWalls.length === 0) {
+      isInitialized.current = true;
       const halfW = roomWidth / 2;
       const halfD = roomDepth / 2;
-      
+
       // Create 4 walls forming the default room boundary
       const defaultWalls = [
         {
@@ -74,10 +121,70 @@ export const FloorplanEditor: React.FC = () => {
           thickness: DEFAULT_WALL_THICKNESS,
         },
       ];
-      
+
       setWalls(defaultWalls);
+    } else if (storeWalls.length > 0) {
+      isInitialized.current = true;
     }
   }, [storeWalls.length, roomWidth, roomDepth, setWalls]);
+
+  // Keep the default rectangular room in sync with roomWidth/roomDepth
+  // Only runs when roomWidth or roomDepth change from sidebar (not when walls change)
+  useEffect(() => {
+    if (!isInitialized.current) return;
+    
+    const rect = detectBaseRectangle(storeWalls);
+    if (!rect) return;
+
+    const halfW = roomWidth / 2;
+    const halfD = roomDepth / 2;
+
+    const updatedWalls = storeWalls.map((w, index) => {
+      if (index === rect.top) {
+        return {
+          ...w,
+          start: [-halfW, halfD],
+          end: [halfW, halfD],
+        };
+      }
+      if (index === rect.bottom) {
+        return {
+          ...w,
+          start: [halfW, -halfD],
+          end: [-halfW, -halfD],
+        };
+      }
+      if (index === rect.right) {
+        return {
+          ...w,
+          start: [halfW, halfD],
+          end: [halfW, -halfD],
+        };
+      }
+      if (index === rect.left) {
+        return {
+          ...w,
+          start: [-halfW, -halfD],
+          end: [-halfW, halfD],
+        };
+      }
+      return w;
+    });
+
+    const changed = updatedWalls.some((w, i) => {
+      const original = storeWalls[i];
+      return (
+        w.start[0] !== original.start[0] ||
+        w.start[1] !== original.start[1] ||
+        w.end[0] !== original.end[0] ||
+        w.end[1] !== original.end[1]
+      );
+    });
+
+    if (changed) {
+      setWalls(updatedWalls);
+    }
+  }, [roomWidth, roomDepth, setWalls]);
 
   // Convert store walls to Wall2D format
   const walls: Wall2D[] = useMemo(() => {
@@ -241,6 +348,32 @@ export const FloorplanEditor: React.FC = () => {
             id: wall.id,
           };
           updateWall(wallIndex, updatedWall);
+
+          // Update room dimensions if this is part of the base rectangle
+          const updatedStoreWalls = [...storeWalls];
+          updatedStoreWalls[wallIndex] = updatedWall;
+          const rect = detectBaseRectangle(updatedStoreWalls);
+          
+          if (rect) {
+            // Calculate new room dimensions from the rectangle walls
+            const topWall = updatedStoreWalls[rect.top];
+            const bottomWall = updatedStoreWalls[rect.bottom];
+            const leftWall = updatedStoreWalls[rect.left];
+            const rightWall = updatedStoreWalls[rect.right];
+
+            // Calculate width (distance between left and right walls)
+            const newWidth = Math.abs(rightWall.start[0] - leftWall.start[0]);
+            // Calculate depth (distance between top and bottom walls)
+            const newDepth = Math.abs(topWall.start[1] - bottomWall.start[1]);
+
+            // Update store dimensions (without toast to avoid spam during drag)
+            if (Math.abs(newWidth - roomWidth) > 0.01) {
+              setRoomWidth(newWidth);
+            }
+            if (Math.abs(newDepth - roomDepth) > 0.01) {
+              setRoomDepth(newDepth);
+            }
+          }
         }
         return;
       }
@@ -253,7 +386,20 @@ export const FloorplanEditor: React.FC = () => {
       // Update hover state for walls
       // This is simplified - in production you'd check distance to each wall segment
     },
-    [getWorldPosition, isPanning, panStart, draggingPoint, isDrawing, walls, updateWall]
+    [
+      getWorldPosition,
+      isPanning,
+      panStart,
+      draggingPoint,
+      isDrawing,
+      walls,
+      updateWall,
+      storeWalls,
+      roomWidth,
+      roomDepth,
+      setRoomWidth,
+      setRoomDepth,
+    ]
   );
 
   const handleMouseUp = useCallback(
